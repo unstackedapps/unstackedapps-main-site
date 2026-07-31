@@ -30,4 +30,7 @@ export const SITE_CONFIG = {
   },
   ogImage: "https://www.unstackedapps.com/og-image.png",
   locale: "en_US",
+  /** n8n webhook for the floating contact chat (override with VITE_CHAT_WEBHOOK_URL) */
+  chatWebhookUrl:
+    (import.meta.env.VITE_CHAT_WEBHOOK_URL as string | undefined) ?? "",
 } as const

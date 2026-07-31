@@ -1,6 +1,14 @@
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Chrome, Sparkles, Zap, Code, Rocket, Mail, ExternalLink, Github, Globe, Linkedin } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Chrome, Sparkles, Zap, Code, Rocket, Mail, ExternalLink, Github, Globe, Linkedin, MessageCircle } from "lucide-react"
 import { SITE_CONFIG } from "@/config/constants"
 import { PROJECTS, PROJECT_BACKLINKS, type ProjectLink } from "@/config/projects"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -10,7 +18,6 @@ import { technologiesByCategory } from "@/config/technologies"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { HeroGeometric } from "@/components/ui/shadcn-io/shape-landing-hero"
-import { useEffect, useRef, type ReactNode } from "react"
 
 function ProjectLinkIcon({ icon }: { icon?: ProjectLink["icon"] }) {
   switch (icon) {
@@ -20,31 +27,48 @@ function ProjectLinkIcon({ icon }: { icon?: ProjectLink["icon"] }) {
       return <Chrome className="mr-2 h-4 w-4" />
     case "globe":
       return <Globe className="mr-2 h-4 w-4" />
+    case "message":
+      return <MessageCircle className="mr-2 h-4 w-4" />
     default:
       return null
   }
 }
 
-function renderProjectLink(link: ProjectLink, stacked: boolean): ReactNode {
-  const className = stacked ? "w-full" : "w-full sm:w-auto"
+function renderProjectLink(link: ProjectLink): ReactNode {
   const content = (
     <>
       <ProjectLinkIcon icon={link.icon} />
       {link.label}
-      {link.external !== false && <ExternalLink className="ml-2 h-4 w-4" />}
+      {link.external !== false && link.action !== "open-chat" && (
+        <ExternalLink className="ml-2 h-4 w-4" />
+      )}
     </>
   )
 
+  if (link.action === "open-chat") {
+    return (
+      <Button
+        key={link.href}
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={() => window.dispatchEvent(new CustomEvent("unstackedapps:open-chat"))}
+      >
+        {content}
+      </Button>
+    )
+  }
+
   if (link.external === false) {
     return (
-      <Button key={link.href} asChild variant="outline" className={className}>
+      <Button key={link.href} asChild variant="outline" className="w-full">
         <Link to={link.href}>{content}</Link>
       </Button>
     )
   }
 
   return (
-    <Button key={link.href} asChild variant="outline" className={className}>
+    <Button key={link.href} asChild variant="outline" className="w-full">
       <a href={link.href} target="_blank" rel="noopener noreferrer">
         {content}
       </a>
@@ -74,6 +98,7 @@ const cardVariants = {
 
 export function Home() {
   const navRef = useRef<HTMLElement>(null)
+  const [previewProject, setPreviewProject] = useState<(typeof PROJECTS)[number] | null>(null)
 
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -208,22 +233,52 @@ export function Home() {
             viewport={{ once: true, margin: "-50px" }}
           >
             {PROJECTS.map((project) => {
-              const stacked = project.links.length > 1
               return (
                 <motion.div key={project.id} variants={cardVariants} className="h-full">
-                  <Card className="hover:shadow-lg transition-shadow flex flex-col h-full">
+                  <Card className="hover:shadow-lg transition-shadow flex flex-col h-full overflow-hidden">
+                    {project.preview && (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewProject(project)}
+                        className="group relative block w-full border-b border-border/30 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label={`View larger screenshot of ${project.name}`}
+                      >
+                        <img
+                          src={project.preview}
+                          alt={project.previewAlt ?? `${project.name} preview`}
+                          className="aspect-[2/1] w-full object-cover object-left-top transition-opacity group-hover:opacity-90"
+                        />
+                        <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/80 to-transparent px-3 py-2 text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                          Click to enlarge
+                        </span>
+                      </button>
+                    )}
                     <CardHeader className="flex-1">
                       <div className="flex items-center gap-3 mb-4">
-                        <img
-                          src={project.logo}
-                          alt={`${project.name} logo`}
-                          className={project.logoClassName ?? "h-8 w-8 object-contain"}
-                        />
+                        {project.logoIcon === "message" ? (
+                          <span
+                            aria-hidden="true"
+                            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/40 bg-secondary shadow-sm"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </span>
+                        ) : (
+                          <img
+                            src={project.logo}
+                            alt={`${project.name} logo`}
+                            className={project.logoClassName ?? "h-8 w-8 object-contain"}
+                          />
+                        )}
                         <CardTitle className="text-2xl">{project.name}</CardTitle>
                       </div>
                       <CardDescription className="text-base min-h-[3rem]">
                         {project.description}
                       </CardDescription>
+                      {project.metrics && (
+                        <p className="mt-3 text-sm text-muted-foreground">
+                          {project.metrics}
+                        </p>
+                      )}
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-col gap-3">
@@ -234,8 +289,8 @@ export function Home() {
                             </span>
                           ))}
                         </div>
-                        <div className={stacked ? "flex flex-col gap-2" : undefined}>
-                          {project.links.map((link) => renderProjectLink(link, stacked))}
+                        <div className="flex flex-col gap-2">
+                          {project.links.map((link) => renderProjectLink(link))}
                         </div>
                       </div>
                     </CardContent>
@@ -246,6 +301,24 @@ export function Home() {
           </motion.div>
         </div>
       </section>
+
+      <Dialog open={!!previewProject} onOpenChange={(open) => !open && setPreviewProject(null)}>
+        <DialogContent className="max-w-4xl border-border/40 p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle>{previewProject?.name}</DialogTitle>
+            <DialogDescription>
+              {previewProject?.previewAlt ?? "Project workflow screenshot"}
+            </DialogDescription>
+          </DialogHeader>
+          {previewProject?.preview && (
+            <img
+              src={previewProject.preview}
+              alt={previewProject.previewAlt ?? `${previewProject.name} preview`}
+              className="w-full object-contain bg-black/40"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Features Section */}
       <section id="features" className="container mx-auto px-4 py-20">
@@ -496,13 +569,31 @@ export function Home() {
               </h2>
               <ul className="space-y-2 text-sm">
                 {PROJECTS.filter((p) => p.id !== "this-website").map((project) => {
-                  const primary = project.links.find((l) => l.external) ?? project.links[0]
+                  const primary =
+                    project.links.find((l) => l.action === "open-chat") ??
+                    project.links.find((l) => l.external) ??
+                    project.links[0]
+
+                  if (primary.action === "open-chat") {
+                    return (
+                      <li key={project.id}>
+                        <button
+                          type="button"
+                          onClick={() => window.dispatchEvent(new CustomEvent("unstackedapps:open-chat"))}
+                          className="text-foreground/90 hover:text-foreground underline-offset-4 hover:underline"
+                        >
+                          {project.name}
+                        </button>
+                      </li>
+                    )
+                  }
+
                   return (
                     <li key={project.id}>
                       <a
                         href={primary.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target={primary.external === false ? undefined : "_blank"}
+                        rel={primary.external === false ? undefined : "noopener noreferrer"}
                         className="text-foreground/90 hover:text-foreground underline-offset-4 hover:underline"
                       >
                         {project.name}
