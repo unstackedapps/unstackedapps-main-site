@@ -1,0 +1,5 @@
+# https://www.unstackedapps.com/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://www.unstackedapps.com/sitemap.xml

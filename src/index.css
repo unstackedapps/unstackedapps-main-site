@@ -53,24 +53,37 @@
 
 @layer base {
   * {
-    @apply border-border/20;
+    @apply border-border/15;
   }
   html {
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 
-  /* Better border visibility in dark mode */
+  /* Soften body copy only — leave headings/brand alone */
+  p {
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+
+  /* Softer Lucide icon strokes site-wide */
+  .lucide {
+    stroke-width: 1.5;
+  }
+
+  /* Better border visibility in dark mode — kept intentionally light */
   .dark * {
-    border-color: hsl(var(--border) / 0.4);
+    border-color: hsl(var(--border) / 0.28);
   }
 }
 
 @layer utilities {
   .dark .hover\:shadow-lg:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.5),
+      0 4px 6px -2px rgba(0, 0, 0, 0.3);
   }
 
   .dark .shadow-sm {

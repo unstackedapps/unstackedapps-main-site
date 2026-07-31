@@ -1,14 +1,56 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Chrome, Sparkles, Zap, Code, Rocket, Mail, ExternalLink, Github, Globe } from "lucide-react"
+import { Chrome, Sparkles, Zap, Code, Rocket, Mail, ExternalLink, Github, Globe, Linkedin } from "lucide-react"
 import { SITE_CONFIG } from "@/config/constants"
+import { PROJECTS, PROJECT_BACKLINKS, type ProjectLink } from "@/config/projects"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileMenu } from "@/components/MobileMenu"
+import { Seo } from "@/components/Seo"
 import { technologiesByCategory } from "@/config/technologies"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { HeroGeometric } from "@/components/ui/shadcn-io/shape-landing-hero"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
+
+function ProjectLinkIcon({ icon }: { icon?: ProjectLink["icon"] }) {
+  switch (icon) {
+    case "github":
+      return <Github className="mr-2 h-4 w-4" />
+    case "chrome":
+      return <Chrome className="mr-2 h-4 w-4" />
+    case "globe":
+      return <Globe className="mr-2 h-4 w-4" />
+    default:
+      return null
+  }
+}
+
+function renderProjectLink(link: ProjectLink, stacked: boolean): ReactNode {
+  const className = stacked ? "w-full" : "w-full sm:w-auto"
+  const content = (
+    <>
+      <ProjectLinkIcon icon={link.icon} />
+      {link.label}
+      {link.external !== false && <ExternalLink className="ml-2 h-4 w-4" />}
+    </>
+  )
+
+  if (link.external === false) {
+    return (
+      <Button key={link.href} asChild variant="outline" className={className}>
+        <Link to={link.href}>{content}</Link>
+      </Button>
+    )
+  }
+
+  return (
+    <Button key={link.href} asChild variant="outline" className={className}>
+      <a href={link.href} target="_blank" rel="noopener noreferrer">
+        {content}
+      </a>
+    </Button>
+  )
+}
 
 // Animation variants
 const staggerContainer = {
@@ -49,6 +91,8 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <Seo path="/" />
+
       {/* Navigation */}
       <motion.nav 
         ref={navRef}
@@ -56,6 +100,7 @@ export function Home() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
+        aria-label="Primary"
       >
         <div className="container mx-auto px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
@@ -76,6 +121,26 @@ export function Home() {
             {/* Desktop menu */}
             <div className="hidden md:flex items-center gap-3">
               <ThemeToggle />
+              <Button variant="outline" size="icon" asChild>
+                <a
+                  href={SITE_CONFIG.social.linkedIn}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Caleb Moore on LinkedIn"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button variant="outline" size="icon" asChild>
+                <a
+                  href={SITE_CONFIG.social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Unstacked Apps on GitHub"
+                >
+                  <Github className="h-4 w-4" />
+                </a>
+              </Button>
               <Button variant="outline" asChild>
                 <Link to="/contact">
                   <Mail className="mr-2 h-4 w-4" />
@@ -142,112 +207,42 @@ export function Home() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
           >
-            <motion.div variants={cardVariants} className="h-full">
-              <Card className="hover:shadow-lg transition-shadow flex flex-col h-full">
-                <CardHeader className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <img 
-                      src="/suitepreferences.png" 
-                      alt="SuitePreferences" 
-                      className="h-8 w-8 object-contain"
-                    />
-                    <CardTitle className="text-2xl">SuitePreferences</CardTitle>
-                  </div>
-                  <CardDescription className="text-base min-h-[3rem]">
-                    A Chrome extension that enhances your NetSuite experience with customizable preferences and productivity features.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="px-2 py-1 bg-secondary rounded-md">Chrome Extension</span>
-                      <span className="px-2 py-1 bg-secondary rounded-md">NetSuite</span>
-                    </div>
-                    <Button asChild variant="outline" className="w-full sm:w-auto">
-                      <a 
-                        href="https://www.suitepreferences.com/" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        Visit Website
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={cardVariants} className="h-full">
-              <Card className="hover:shadow-lg transition-shadow flex flex-col h-full">
-                <CardHeader className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <img 
-                      src="/opensuitemcp.svg" 
-                      alt="OpenSuiteMCP" 
-                      className="h-8 w-8 object-contain"
-                    />
-                    <CardTitle className="text-2xl">OpenSuiteMCP</CardTitle>
-                  </div>
-                  <CardDescription className="text-base min-h-[3rem]">
-                    An open-source AI assistant for NetSuite that helps you work smarter with intelligent automation and insights.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="px-2 py-1 bg-secondary rounded-md">AI Assistant</span>
-                      <span className="px-2 py-1 bg-secondary rounded-md">Open Source</span>
-                      <span className="px-2 py-1 bg-secondary rounded-md">NetSuite</span>
-                    </div>
-                    <Button asChild variant="outline" className="w-full sm:w-auto">
-                      <a 
-                        href="https://github.com/opensuitemcp/opensuitemcp" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        <Github className="mr-2 h-4 w-4" />
-                        View on GitHub
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={cardVariants} className="h-full">
-              <Card className="hover:shadow-lg transition-shadow flex flex-col h-full">
-                <CardHeader className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <img 
-                      src="/logo.svg" 
-                      alt="Unstacked Apps" 
-                      className="h-8 w-8 object-contain"
-                    />
-                    <CardTitle className="text-2xl">This Website</CardTitle>
-                  </div>
-                  <CardDescription className="text-base min-h-[3rem]">
-                    A production-ready single-page application built with React, Vite, and Tailwind CSS. Deployed on GitHub Pages with a custom domain.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                      <span className="px-2 py-1 bg-secondary rounded-md">React</span>
-                      <span className="px-2 py-1 bg-secondary rounded-md">SPA</span>
-                      <span className="px-2 py-1 bg-secondary rounded-md">GitHub Pages</span>
-                    </div>
-                    <Button asChild variant="outline" className="w-full sm:w-auto">
-                      <Link to="/spa-showcase">
-                        <Globe className="mr-2 h-4 w-4" />
-                        View SPA Examples
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            {PROJECTS.map((project) => {
+              const stacked = project.links.length > 1
+              return (
+                <motion.div key={project.id} variants={cardVariants} className="h-full">
+                  <Card className="hover:shadow-lg transition-shadow flex flex-col h-full">
+                    <CardHeader className="flex-1">
+                      <div className="flex items-center gap-3 mb-4">
+                        <img
+                          src={project.logo}
+                          alt={`${project.name} logo`}
+                          className={project.logoClassName ?? "h-8 w-8 object-contain"}
+                        />
+                        <CardTitle className="text-2xl">{project.name}</CardTitle>
+                      </div>
+                      <CardDescription className="text-base min-h-[3rem]">
+                        {project.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                          {project.tags.map((tag) => (
+                            <span key={tag} className="px-2 py-1 bg-secondary rounded-md">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className={stacked ? "flex flex-col gap-2" : undefined}>
+                          {project.links.map((link) => renderProjectLink(link, stacked))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )
+            })}
           </motion.div>
         </div>
       </section>
@@ -420,7 +415,7 @@ export function Home() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.9 }}
         >
-          <Card className="border-2">
+          <Card className="border">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground/60 to-foreground/30">Ready to Get Started?</CardTitle>
               <CardDescription className="text-lg mt-4">
@@ -443,26 +438,123 @@ export function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/10 py-8">
+      <footer className="border-t border-border/10 py-12">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <Link to="/" className="brand-wrapper">
-              <img 
-                src="/logo.svg" 
-                alt="Unstacked Apps" 
-                className="brand-logo brand-logo-footer"
-              />
-              <div className="brand-container brand-container-footer">
-                <span className="brand-name brand-name-footer">
-                  <span className="brand-name-thin">un</span>stacked
-                </span>
-                <span className="brand-subtitle brand-subtitle-footer">apps</span>
+          <div className="grid gap-10 md:grid-cols-3">
+            <div className="flex flex-col gap-4">
+              <Link to="/" className="brand-wrapper w-fit">
+                <img 
+                  src="/logo.svg" 
+                  alt="Unstacked Apps" 
+                  className="brand-logo brand-logo-footer"
+                />
+                <div className="brand-container brand-container-footer">
+                  <span className="brand-name brand-name-footer">
+                    <span className="brand-name-thin">un</span>stacked
+                  </span>
+                  <span className="brand-subtitle brand-subtitle-footer">apps</span>
+                </div>
+              </Link>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                {SITE_CONFIG.siteDescription}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" asChild>
+                  <a
+                    href={SITE_CONFIG.social.linkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Caleb Moore on LinkedIn"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                  </a>
+                </Button>
+                <Button variant="outline" size="icon" asChild>
+                  <a
+                    href={SITE_CONFIG.social.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Unstacked Apps on GitHub"
+                  >
+                    <Github className="h-4 w-4" />
+                  </a>
+                </Button>
+                <Button variant="outline" size="icon" asChild>
+                  <a
+                    href={`mailto:${SITE_CONFIG.contactEmail}`}
+                    aria-label="Email Unstacked Apps"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </a>
+                </Button>
               </div>
-            </Link>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} {SITE_CONFIG.companyName}. All rights reserved.
-            </p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground mb-4">
+                Projects
+              </h2>
+              <ul className="space-y-2 text-sm">
+                {PROJECTS.filter((p) => p.id !== "this-website").map((project) => {
+                  const primary = project.links.find((l) => l.external) ?? project.links[0]
+                  return (
+                    <li key={project.id}>
+                      <a
+                        href={primary.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-foreground/90 hover:text-foreground underline-offset-4 hover:underline"
+                      >
+                        {project.name}
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground mb-4">
+                Links
+              </h2>
+              <ul className="space-y-2 text-sm">
+                {PROJECT_BACKLINKS.map((link) => (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-foreground/90 hover:text-foreground underline-offset-4 hover:underline"
+                    >
+                      {link.projectName} — {link.label}
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a
+                    href={SITE_CONFIG.social.linkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground/90 hover:text-foreground underline-offset-4 hover:underline"
+                  >
+                    LinkedIn — {SITE_CONFIG.author.name}
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="text-foreground/90 hover:text-foreground underline-offset-4 hover:underline"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
+
+          <p className="mt-10 text-sm text-muted-foreground text-center md:text-left">
+            © {new Date().getFullYear()} {SITE_CONFIG.companyName}. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

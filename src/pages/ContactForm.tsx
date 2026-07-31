@@ -6,6 +6,7 @@ import { ArrowLeft, Send, ChevronDown, ChevronUp, HelpCircle } from "lucide-reac
 import { Link } from "react-router-dom"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileMenu } from "@/components/MobileMenu"
+import { Seo } from "@/components/Seo"
 import {
   Select,
   SelectContent,
@@ -208,6 +209,11 @@ export function ContactForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <Seo
+        title="Contact"
+        description="Contact Unstacked Apps to discuss Chrome extensions, SPAs, AI assistants, n8n nodes, or custom website projects."
+        path="/contact"
+      />
       {/* Navigation */}
       <motion.nav 
         className="container mx-auto px-4 py-3 sm:py-4"

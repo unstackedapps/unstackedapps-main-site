@@ -25,6 +25,7 @@ import { ArrowLeft, Users, FileText, Briefcase, GraduationCap, Linkedin, Github,
 import { Link } from "react-router-dom"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileMenu } from "@/components/MobileMenu"
+import { Seo } from "@/components/Seo"
 
 type SPAType = "user-management" | "professional-resume"
 
@@ -93,6 +94,11 @@ export function SPAShowcase() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <Seo
+        title="SPA Showcase"
+        description="Interactive SPA examples from Unstacked Apps — user management and professional resume demos built with React."
+        path="/spa-showcase"
+      />
       {/* Navigation */}
       <motion.nav 
         className="container mx-auto px-4 py-3 sm:py-4"

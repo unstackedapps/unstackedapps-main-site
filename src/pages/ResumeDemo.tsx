@@ -15,6 +15,7 @@ import { ArrowLeft, Briefcase, GraduationCap, Linkedin, Github, Mail, Phone, Cal
 import { Link } from "react-router-dom"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileMenu } from "@/components/MobileMenu"
+import { Seo } from "@/components/Seo"
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -43,6 +44,11 @@ export function ResumeDemo() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <Seo
+        title="Resume Demo"
+        description="A professional resume SPA demo from Unstacked Apps showcasing interactive scheduling and profile layouts."
+        path="/resume-demo"
+      />
       {/* Navigation */}
       <motion.nav 
         className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/80 border-b border-border/10"
