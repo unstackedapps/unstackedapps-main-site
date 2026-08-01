@@ -71,6 +71,12 @@ export const PROJECTS: Project[] = [
     schemaType: "SoftwareApplication",
     links: [
       {
+        label: "Try the app",
+        href: "https://opensuitemcp.com/",
+        external: true,
+        icon: "external",
+      },
+      {
         label: "View on GitHub",
         href: "https://github.com/opensuitemcp/opensuitemcp",
         external: true,
