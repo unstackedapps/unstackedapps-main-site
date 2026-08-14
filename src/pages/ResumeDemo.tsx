@@ -1,8 +1,25 @@
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { DatePicker } from "@/components/ui/date-picker"
+import { motion } from "framer-motion";
+import {
+  Briefcase,
+  Calendar,
+  CheckCircle2,
+  Code,
+  ExternalLink,
+  Github,
+  GraduationCap,
+  Linkedin,
+  Mail,
+  Phone,
+  Play,
+  Video,
+} from "lucide-react";
+import { useState } from "react";
+import { marketingCardClass } from "@/components/MarketingPageHeader";
+import { Seo } from "@/components/Seo";
+import { SiteHeader } from "@/components/SiteHeader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -10,116 +27,58 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { ArrowLeft, Briefcase, GraduationCap, Linkedin, Github, Mail, Phone, Calendar, Play, Video, Code, ExternalLink, CheckCircle2 } from "lucide-react"
-import { Link } from "react-router-dom"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { MobileMenu } from "@/components/MobileMenu"
-import { Seo } from "@/components/Seo"
+} from "@/components/ui/dialog";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
-}
+  visible: { opacity: 1, transition: { duration: 0.8 }, y: 0 },
+};
 
 export function ResumeDemo() {
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
-
-  // Prevent scroll restoration on page load
-  useEffect(() => {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual'
-    }
-    window.scrollTo(0, 0)
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0)
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0)
-      })
-    })
-  }, [])
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(
+    undefined
+  );
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <>
       <Seo
-        title="Resume Demo"
         description="A professional resume SPA demo from Unstacked Apps showcasing interactive scheduling and profile layouts."
         path="/resume-demo"
+        title="Resume Demo"
       />
-      {/* Navigation */}
-      <motion.nav 
-        className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/80 border-b border-border/10"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        <div className="container mx-auto px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="brand-wrapper">
-              <img 
-                src="/logo.svg" 
-                alt="Unstacked Apps" 
-                className="brand-logo"
-              />
-              <div className="brand-container">
-                <span className="brand-name">
-                  <span className="brand-name-thin">un</span>stacked
-                </span>
-                <span className="brand-subtitle">apps</span>
-              </div>
-            </Link>
-            <div className="flex items-center gap-3">
-              <div className="hidden md:flex items-center gap-3">
-                <ThemeToggle />
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/spa-showcase">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Examples
-                  </Link>
-                </Button>
-              </div>
-              <div className="md:hidden flex items-center gap-2">
-                <MobileMenu />
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/spa-showcase">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      <SiteHeader
+        backTo={{ href: "/spa-showcase", label: "Back to Examples" }}
+      />
 
-      {/* Resume Content */}
-      <motion.section 
-        className="container mx-auto px-4 py-8 sm:py-12"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
+      <section className="mx-auto max-w-6xl px-5 py-8 sm:py-12 md:px-8">
         <div className="mx-auto max-w-4xl">
-          <Card>
+          <Card className={marketingCardClass}>
             <CardContent className="pt-6">
               <div className="space-y-8">
                 {/* Header Section */}
-                <div className="text-center border-b pb-6 relative">
-                  <div className="flex justify-center mb-4">
-                    <div className="w-32 h-32 rounded-full border-4 border-border overflow-hidden">
-                      <img 
-                        src="/sample_profile.png" 
-                        alt="John Doe" 
-                        className="w-full h-full object-cover"
-                        style={{ transform: 'scale(1.5) translateY(15%)', objectPosition: 'center 40%' }}
+                <div className="relative border-b pb-6 text-center">
+                  <div className="mb-4 flex justify-center">
+                    <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-border">
+                      <img
+                        alt="John Doe"
+                        className="h-full w-full object-cover"
+                        src="/sample_profile.png"
+                        style={{
+                          objectPosition: "center 40%",
+                          transform: "scale(1.5) translateY(15%)",
+                        }}
                       />
                     </div>
                   </div>
-                  <h1 className="text-3xl sm:text-4xl font-bold mb-2">John Doe</h1>
-                  <p className="text-lg text-muted-foreground mb-4">Senior Software Engineer</p>
+                  <h1 className="mb-2 font-bold text-3xl sm:text-4xl">
+                    John Doe
+                  </h1>
+                  <p className="mb-4 text-lg text-muted-foreground">
+                    Senior Software Engineer
+                  </p>
                   <div className="flex flex-wrap justify-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
@@ -142,84 +101,98 @@ export function ResumeDemo() {
 
                 {/* Virtual Resume Video Section */}
                 <motion.div
-                  variants={fadeInUp}
-                  initial="hidden"
                   animate="visible"
-                  className="border rounded-lg p-6 bg-muted/30"
+                  className="rounded-lg border bg-muted/30 p-6"
+                  initial="hidden"
+                  variants={fadeInUp}
                 >
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="mb-4 flex items-center gap-3">
                     <Video className="h-6 w-6 text-primary" />
-                    <h2 className="text-xl font-semibold">Virtual Resume</h2>
+                    <h2 className="font-semibold text-xl">Virtual Resume</h2>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Get to know me in 30 seconds. Watch a quick introduction video.
+                  <p className="mb-4 text-muted-foreground text-sm">
+                    Get to know me in 30 seconds. Watch a quick introduction
+                    video.
                   </p>
-                  <div className="relative aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-                    {!isVideoPlaying ? (
-                      <button
-                        onClick={() => setIsVideoPlaying(true)}
-                        className="absolute inset-0 flex items-center justify-center bg-black/50 hover:bg-black/60 transition-colors group"
-                      >
-                        <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center group-hover:bg-primary transition-colors">
-                          <Play className="h-10 w-10 text-primary-foreground ml-1" fill="currentColor" />
-                        </div>
-                      </button>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                        <div className="text-center p-8">
-                          <Video className="h-16 w-16 mx-auto mb-4 text-primary/50" />
+                  <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg bg-muted">
+                    {isVideoPlaying ? (
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                        <div className="p-8 text-center">
+                          <Video className="mx-auto mb-4 h-16 w-16 text-primary/50" />
                           <p className="text-muted-foreground">
                             Video player would be embedded here
                           </p>
-                          <p className="text-sm text-muted-foreground mt-2">
+                          <p className="mt-2 text-muted-foreground text-sm">
                             (30 second introduction video)
                           </p>
                         </div>
                       </div>
+                    ) : (
+                      <button
+                        className="group absolute inset-0 flex items-center justify-center bg-black/50 transition-colors hover:bg-black/60"
+                        onClick={() => setIsVideoPlaying(true)}
+                      >
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/90 transition-colors group-hover:bg-primary">
+                          <Play
+                            className="ml-1 h-10 w-10 text-primary-foreground"
+                            fill="currentColor"
+                          />
+                        </div>
+                      </button>
                     )}
                   </div>
                 </motion.div>
 
                 {/* Book Time Section */}
                 <motion.div
-                  variants={fadeInUp}
-                  initial="hidden"
                   animate="visible"
-                  className="border rounded-lg p-6"
+                  className="rounded-lg border p-6"
+                  initial="hidden"
+                  variants={fadeInUp}
                 >
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="mb-4 flex items-center gap-3">
                     <Calendar className="h-6 w-6 text-primary" />
-                    <h2 className="text-xl font-semibold">Book Time With Me</h2>
+                    <h2 className="font-semibold text-xl">Book Time With Me</h2>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Schedule a 30-minute call to discuss opportunities or collaboration.
+                  <p className="mb-4 text-muted-foreground text-sm">
+                    Schedule a 30-minute call to discuss opportunities or
+                    collaboration.
                   </p>
                   <div className="space-y-4">
                     <div>
                       <DatePicker
-                        value={selectedDate}
+                        label="Select a date"
                         onChange={setSelectedDate}
                         placeholder="Select a date"
-                        label="Select a date"
+                        value={selectedDate}
                       />
                     </div>
                     {selectedDate && (
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
+                        animate={{ height: "auto", opacity: 1 }}
                         className="space-y-2"
+                        initial={{ height: 0, opacity: 0 }}
                       >
-                        <label className="text-sm font-medium mb-2 block">Available times</label>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {["9:00 AM", "10:00 AM", "11:00 AM", "2:00 PM", "3:00 PM", "4:00 PM"].map((time) => (
+                        <label className="mb-2 block font-medium text-sm">
+                          Available times
+                        </label>
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                          {[
+                            "9:00 AM",
+                            "10:00 AM",
+                            "11:00 AM",
+                            "2:00 PM",
+                            "3:00 PM",
+                            "4:00 PM",
+                          ].map((time) => (
                             <Button
-                              key={time}
-                              variant="outline"
                               className="w-full"
+                              key={time}
                               onClick={() => {
-                                setSelectedTime(time)
-                                setIsBookingDialogOpen(true)
+                                setSelectedTime(time);
+                                setIsBookingDialogOpen(true);
                               }}
+                              variant="outline"
                             >
                               {time}
                             </Button>
@@ -232,39 +205,51 @@ export function ResumeDemo() {
 
                 {/* Experience Section */}
                 <motion.div
-                  variants={fadeInUp}
-                  initial="hidden"
                   animate="visible"
+                  initial="hidden"
+                  variants={fadeInUp}
                 >
-                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <h2 className="mb-4 flex items-center gap-2 font-semibold text-xl">
                     <Briefcase className="h-5 w-5" />
                     Experience
                   </h2>
                   <div className="space-y-4">
                     <div className="border-l-2 pl-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-1">
+                      <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                          <h3 className="font-semibold">Senior Software Engineer</h3>
-                          <p className="text-sm text-muted-foreground">Tech Company Inc.</p>
+                          <h3 className="font-semibold">
+                            Senior Software Engineer
+                          </h3>
+                          <p className="text-muted-foreground text-sm">
+                            Tech Company Inc.
+                          </p>
                         </div>
-                        <span className="text-sm text-muted-foreground">2020 - Present</span>
+                        <span className="text-muted-foreground text-sm">
+                          2020 - Present
+                        </span>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Lead development of scalable web applications using React and Node.js. 
-                        Mentored junior developers and improved code quality standards.
+                      <p className="mt-1 text-muted-foreground text-sm">
+                        Lead development of scalable web applications using
+                        React and Node.js. Mentored junior developers and
+                        improved code quality standards.
                       </p>
                     </div>
                     <div className="border-l-2 pl-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-1">
+                      <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <h3 className="font-semibold">Software Engineer</h3>
-                          <p className="text-sm text-muted-foreground">Startup Co.</p>
+                          <p className="text-muted-foreground text-sm">
+                            Startup Co.
+                          </p>
                         </div>
-                        <span className="text-sm text-muted-foreground">2018 - 2020</span>
+                        <span className="text-muted-foreground text-sm">
+                          2018 - 2020
+                        </span>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Built and maintained customer-facing features. Collaborated with design team 
-                        to implement responsive UI components.
+                      <p className="mt-1 text-muted-foreground text-sm">
+                        Built and maintained customer-facing features.
+                        Collaborated with design team to implement responsive UI
+                        components.
                       </p>
                     </div>
                   </div>
@@ -272,49 +257,56 @@ export function ResumeDemo() {
 
                 {/* Projects Section with React Flow Wireframe */}
                 <motion.div
-                  variants={fadeInUp}
-                  initial="hidden"
                   animate="visible"
-                  className="border rounded-lg p-6"
+                  className="rounded-lg border p-6"
+                  initial="hidden"
+                  variants={fadeInUp}
                 >
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="mb-4 flex items-center gap-3">
                     <Code className="h-6 w-6 text-primary" />
-                    <h2 className="text-xl font-semibold">Projects</h2>
+                    <h2 className="font-semibold text-xl">Projects</h2>
                   </div>
                   <div className="space-y-6">
                     <div>
-                      <h3 className="font-semibold mb-2">Integration Architecture - n8n Workflow</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Designed and implemented a complex integration system connecting multiple APIs 
-                        using n8n. This wireframe shows the workflow architecture.
+                      <h3 className="mb-2 font-semibold">
+                        Integration Architecture - n8n Workflow
+                      </h3>
+                      <p className="mb-4 text-muted-foreground text-sm">
+                        Designed and implemented a complex integration system
+                        connecting multiple APIs using n8n. This wireframe shows
+                        the workflow architecture.
                       </p>
-                      <div className="border rounded-lg bg-muted/30 p-4 aspect-video flex items-center justify-center">
+                      <div className="flex aspect-video items-center justify-center rounded-lg border bg-muted/30 p-4">
                         <div className="text-center">
-                          <Code className="h-12 w-12 mx-auto mb-3 text-primary/50" />
-                          <p className="text-sm text-muted-foreground mb-2">
+                          <Code className="mx-auto mb-3 h-12 w-12 text-primary/50" />
+                          <p className="mb-2 text-muted-foreground text-sm">
                             React Flow wireframe would be embedded here
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            Interactive diagram showing API connections and data flow
+                          <p className="text-muted-foreground text-xs">
+                            Interactive diagram showing API connections and data
+                            flow
                           </p>
                         </div>
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">E-Commerce Platform</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Built a full-stack e-commerce solution with React, Node.js, and PostgreSQL.
+                      <h3 className="mb-2 font-semibold">
+                        E-Commerce Platform
+                      </h3>
+                      <p className="mb-2 text-muted-foreground text-sm">
+                        Built a full-stack e-commerce solution with React,
+                        Node.js, and PostgreSQL.
                       </p>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <a href="#" target="_blank" rel="noopener noreferrer">
+                        <Button asChild size="sm" variant="outline">
+                          <a href="#" rel="noopener noreferrer" target="_blank">
                             <Github className="mr-2 h-4 w-4" />
                             View Code
                             <ExternalLink className="ml-2 h-4 w-4" />
                           </a>
                         </Button>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href="#" target="_blank" rel="noopener noreferrer">
+                        <Button asChild size="sm" variant="outline">
+                          <a href="#" rel="noopener noreferrer" target="_blank">
                             <ExternalLink className="mr-2 h-4 w-4" />
                             Live Demo
                           </a>
@@ -326,35 +318,54 @@ export function ResumeDemo() {
 
                 {/* Education Section */}
                 <motion.div
-                  variants={fadeInUp}
-                  initial="hidden"
                   animate="visible"
+                  initial="hidden"
+                  variants={fadeInUp}
                 >
-                  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <h2 className="mb-4 flex items-center gap-2 font-semibold text-xl">
                     <GraduationCap className="h-5 w-5" />
                     Education
                   </h2>
                   <div className="border-l-2 pl-4">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-1">
+                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <h3 className="font-semibold">Bachelor of Science in Computer Science</h3>
-                        <p className="text-sm text-muted-foreground">University of Technology</p>
+                        <h3 className="font-semibold">
+                          Bachelor of Science in Computer Science
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                          University of Technology
+                        </p>
                       </div>
-                      <span className="text-sm text-muted-foreground">2014 - 2018</span>
+                      <span className="text-muted-foreground text-sm">
+                        2014 - 2018
+                      </span>
                     </div>
                   </div>
                 </motion.div>
 
                 {/* Skills Section */}
                 <motion.div
-                  variants={fadeInUp}
-                  initial="hidden"
                   animate="visible"
+                  initial="hidden"
+                  variants={fadeInUp}
                 >
-                  <h2 className="text-xl font-semibold mb-4">Skills</h2>
+                  <h2 className="mb-4 font-semibold text-xl">Skills</h2>
                   <div className="flex flex-wrap gap-2">
-                    {["React", "TypeScript", "Node.js", "PostgreSQL", "Docker", "AWS", "n8n", "Git", "CI/CD"].map((skill) => (
-                      <span key={skill} className="px-3 py-1 bg-secondary rounded-md text-sm">
+                    {[
+                      "React",
+                      "TypeScript",
+                      "Node.js",
+                      "PostgreSQL",
+                      "Docker",
+                      "AWS",
+                      "n8n",
+                      "Git",
+                      "CI/CD",
+                    ].map((skill) => (
+                      <span
+                        className="rounded-md bg-secondary px-3 py-1 text-sm"
+                        key={skill}
+                      >
                         {skill}
                       </span>
                     ))}
@@ -364,38 +375,35 @@ export function ResumeDemo() {
             </CardContent>
           </Card>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Booking Confirmation Dialog */}
-      <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
-        <DialogContent>
+      <Dialog onOpenChange={setIsBookingDialogOpen} open={isBookingDialogOpen}>
+        <DialogContent className="border-white/10 bg-[#141c27] text-[#f3efe6]">
           <DialogHeader>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="mb-2 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                 <CheckCircle2 className="h-6 w-6 text-primary" />
               </div>
               <DialogTitle>Booking Confirmed</DialogTitle>
             </div>
             <DialogDescription>
               {selectedDate && selectedTime && (
-                <div className="space-y-2 mt-4">
+                <div className="mt-4 space-y-2">
                   <p className="text-base">
                     Your meeting has been scheduled for:
                   </p>
-                  <div className="bg-muted p-4 rounded-lg">
+                  <div className="rounded-lg bg-muted p-4">
                     <p className="font-semibold text-lg">
-                      {new Date(selectedDate).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+                      {new Date(selectedDate).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "long",
+                        weekday: "long",
+                        year: "numeric",
                       })}
                     </p>
-                    <p className="text-muted-foreground">
-                      at {selectedTime}
-                    </p>
+                    <p className="text-muted-foreground">at {selectedTime}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-4">
+                  <p className="mt-4 text-muted-foreground text-sm">
                     A calendar invitation will be sent to your email address.
                   </p>
                 </div>
@@ -403,13 +411,15 @@ export function ResumeDemo() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={() => setIsBookingDialogOpen(false)}>
+            <Button
+              className="bg-primary text-primary-foreground hover:opacity-90"
+              onClick={() => setIsBookingDialogOpen(false)}
+            >
               Close
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  )
+    </>
+  );
 }
-

@@ -1,156 +1,169 @@
-import { useState } from "react"
-import { Menu, Moon, Sun, Monitor, Linkedin, Github, Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Github,
+  Linkedin,
+  Mail,
+  Menu,
+  MessageCircle,
+} from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useTheme } from "@/hooks/use-theme"
-import { SITE_CONFIG } from "@/config/constants"
-import { motion } from "framer-motion"
-import { Link } from "react-router-dom"
+} from "@/components/ui/sheet";
+import { SITE_CONFIG } from "@/config/constants";
 
-export function MobileMenu() {
-  const [open, setOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
+interface MobileMenuProps {
+  backTo?: { href: string; label: string };
+}
 
-  const getThemeLabel = () => {
-    switch (theme) {
-      case "light":
-        return "Light Mode"
-      case "dark":
-        return "Dark Mode"
-      case "system":
-        return "System Theme"
-      default:
-        return "Toggle Theme"
-    }
-  }
+function openChat() {
+  window.dispatchEvent(new CustomEvent("unstackedapps:open-chat"));
+}
 
-  const getThemeIcon = () => {
-    switch (theme) {
-      case "light":
-        return <Sun className="mr-2 h-4 w-4" />
-      case "dark":
-        return <Moon className="mr-2 h-4 w-4" />
-      case "system":
-        return <Monitor className="mr-2 h-4 w-4" />
-      default:
-        return <Sun className="mr-2 h-4 w-4" />
-    }
-  }
+export function MobileMenu({ backTo }: MobileMenuProps) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
+        <Button
+          className="text-[#f3efe6]/80 hover:bg-white/5 hover:text-[#f3efe6] md:hidden"
+          size="icon"
+          variant="ghost"
+        >
+          <Menu className="size-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] h-auto top-4 right-4 rounded-lg">
+      <SheetContent
+        className="top-4 right-4 h-auto w-[min(100vw-2rem,18rem)] rounded-lg border-white/10 bg-[#141c27] text-[#f3efe6]"
+        side="right"
+      >
         <SheetHeader className="pb-4">
-          <SheetTitle>Menu</SheetTitle>
+          <SheetTitle
+            className="text-[#f3efe6]"
+            style={{ fontFamily: "var(--font-raleway, 'Raleway', sans-serif)" }}
+          >
+            Menu
+          </SheetTitle>
           <SheetDescription className="sr-only">
-            Navigation menu with theme toggle and contact options
+            Navigation menu with chat and contact options
           </SheetDescription>
         </SheetHeader>
         <motion.div
+          animate={{ opacity: 1, x: 0 }}
           className="flex flex-col gap-3"
           initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-start">
-                  {getThemeIcon()}
-                  {getThemeLabel()}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  <Sun className="mr-2 h-4 w-4" />
-                  <span>Light</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  <Moon className="mr-2 h-4 w-4" />
-                  <span>Dark</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  <Monitor className="mr-2 h-4 w-4" />
-                  <span>System</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-          >
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <a
-                href={SITE_CONFIG.social.linkedIn}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setOpen(false)}
-              >
-                <Linkedin className="mr-2 h-4 w-4" />
-                LinkedIn
-              </a>
-            </Button>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-          >
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <a
-                href={SITE_CONFIG.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setOpen(false)}
-              >
-                <Github className="mr-2 h-4 w-4" />
-                GitHub
-              </a>
-            </Button>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
-          >
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link 
-                to="/contact"
-                onClick={() => setOpen(false)}
-              >
-                <Mail className="mr-2 h-4 w-4" />
-                Contact Us
+          {backTo ? (
+            <Button
+              asChild
+              className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+              variant="outline"
+            >
+              <Link onClick={() => setOpen(false)} to={backTo.href}>
+                <ArrowLeft className="mr-2 size-4" />
+                {backTo.label}
               </Link>
             </Button>
-          </motion.div>
+          ) : (
+            <>
+              <Button
+                asChild
+                className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+                variant="outline"
+              >
+                <Link onClick={() => setOpen(false)} to="/#projects">
+                  Projects
+                </Link>
+              </Button>
+              <Button
+                asChild
+                className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+                variant="outline"
+              >
+                <Link onClick={() => setOpen(false)} to="/#approach">
+                  Approach
+                </Link>
+              </Button>
+              <Button
+                asChild
+                className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+                variant="outline"
+              >
+                <Link onClick={() => setOpen(false)} to="/#features">
+                  About
+                </Link>
+              </Button>
+            </>
+          )}
+
+          <Button
+            className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+            onClick={() => {
+              openChat();
+              setOpen(false);
+            }}
+            type="button"
+            variant="outline"
+          >
+            <MessageCircle className="mr-2 size-4" />
+            Chat
+          </Button>
+
+          <Button
+            asChild
+            className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+            variant="outline"
+          >
+            <a
+              href={SITE_CONFIG.social.linkedIn}
+              onClick={() => setOpen(false)}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Linkedin className="mr-2 size-4" />
+              LinkedIn
+            </a>
+          </Button>
+
+          <Button
+            asChild
+            className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+            variant="outline"
+          >
+            <a
+              href={SITE_CONFIG.social.github}
+              onClick={() => setOpen(false)}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Github className="mr-2 size-4" />
+              GitHub
+            </a>
+          </Button>
+
+          <Button
+            asChild
+            className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
+            variant="outline"
+          >
+            <Link onClick={() => setOpen(false)} to="/contact">
+              <Mail className="mr-2 size-4" />
+              Contact Us
+            </Link>
+          </Button>
         </motion.div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }
-

@@ -29,25 +29,26 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    /* Studio navy palette — monochrome with cream accents */
+    --background: 213 35% 7%;
+    --foreground: 40 29% 94%;
+    --card: 214 32% 12%;
+    --card-foreground: 40 29% 94%;
+    --popover: 214 30% 13%;
+    --popover-foreground: 40 29% 94%;
+    --primary: 40 29% 94%;
+    --primary-foreground: 213 35% 7%;
+    --secondary: 214 24% 16%;
+    --secondary-foreground: 40 29% 94%;
+    --muted: 214 26% 11%;
+    --muted-foreground: 40 12% 62%;
+    --accent: 214 22% 18%;
+    --accent-foreground: 40 29% 94%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 0 0% 83.9%;
+    --border: 214 18% 24%;
+    --input: 214 18% 24%;
+    --ring: 40 20% 85%;
   }
 }
 
@@ -57,9 +58,41 @@
   }
   html {
     scroll-behavior: smooth;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+
+  html.marketing-landing-scroll,
+  html.marketing-landing-scroll body {
+    background: #0c1219 !important;
+  }
+
+  html.marketing-landing-scroll,
+  html.marketing-landing-scroll * {
+    scrollbar-color: rgba(243, 239, 230, 0.28) transparent;
+  }
+
+  html.marketing-landing-scroll::-webkit-scrollbar-track,
+  html.marketing-landing-scroll *::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  html.marketing-landing-scroll::-webkit-scrollbar-thumb,
+  html.marketing-landing-scroll *::-webkit-scrollbar-thumb {
+    background: rgba(243, 239, 230, 0.28);
+  }
+
+  html.marketing-landing-scroll::-webkit-scrollbar-thumb:hover,
+  html.marketing-landing-scroll *::-webkit-scrollbar-thumb:hover {
+    background: rgba(243, 239, 230, 0.45);
+  }
+
+  html.marketing-landing-scroll::-webkit-scrollbar-corner,
+  html.marketing-landing-scroll *::-webkit-scrollbar-corner {
+    background: transparent !important;
   }
 
   /* Soften body copy only — leave headings/brand alone */
@@ -73,7 +106,20 @@
     stroke-width: 1.5;
   }
 
-  /* Better border visibility in dark mode — kept intentionally light */
+  /* Dark UI surfaces — keep inputs/buttons on the navy stack, not pure black */
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--card) / 0.8);
+    border-color: hsl(var(--input) / 0.8);
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
   .dark * {
     border-color: hsl(var(--border) / 0.28);
   }
@@ -102,9 +148,9 @@
   .rdp-cell button,
   .rdp-cell {
     border: none !important;
-    border-width: 0 !important;
-    border-style: none !important;
     border-color: transparent !important;
+    border-style: none !important;
+    border-width: 0 !important;
   }
 
   .dark .rdp *,
@@ -113,18 +159,18 @@
   .dark button.rdp-day,
   .dark .rdp-nav_button {
     border: none !important;
-    border-width: 0 !important;
-    border-style: none !important;
     border-color: transparent !important;
+    border-style: none !important;
+    border-width: 0 !important;
   }
 
   .brand-container {
     display: flex;
     flex-direction: column;
-    line-height: 1;
     gap: 0;
     height: 40px; /* 30px (brand-name) + 15px (subtitle) - 5px (margin-top) */
     margin-left: -4px; /* Bring text closer to logo */
+    line-height: 1; /* Bring text closer to logo */
   }
 
   @media (max-width: 640px) {
@@ -134,10 +180,10 @@
   }
 
   .brand-logo {
-    height: 40px;
-    width: auto;
-    align-self: center;
     display: block;
+    align-self: center;
+    width: auto;
+    height: 40px;
     margin-top: 3px; /* Adjust for lowercase visual center */
   }
 
@@ -155,15 +201,15 @@
 
   .brand-wrapper {
     display: flex;
-    align-items: center;
     gap: 0px;
-    text-decoration: none;
+    align-items: center;
     color: inherit;
-    user-select: none;
-    -webkit-user-select: none;
+    text-decoration: none;
+    cursor: pointer;
     -moz-user-select: none;
     -ms-user-select: none;
-    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .brand-wrapper:hover {
@@ -175,13 +221,17 @@
     font-family: "Inter", sans-serif;
     font-size: 30px;
     font-weight: 700;
-    background: linear-gradient(to right, hsl(var(--foreground)), hsl(var(--foreground) / 0.4));
+    line-height: 1;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.05em;
+    background: linear-gradient(
+      to right,
+      hsl(var(--foreground)),
+      hsl(var(--foreground) / 0.4)
+    );
     -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    letter-spacing: -0.05em;
-    line-height: 1;
   }
 
   @media (max-width: 640px) {
@@ -195,22 +245,22 @@
   }
 
   .brand-subtitle {
+    padding-right: 5px;
+    margin-top: -5px;
     font-family: "Inter", sans-serif;
     font-size: 15px;
     font-weight: 300;
-    letter-spacing: -0.03rem;
-    color: hsl(var(--foreground));
     line-height: 1;
+    color: hsl(var(--foreground));
     text-align: right;
-    margin-top: -5px;
-    padding-right: 5px;
+    letter-spacing: -0.03rem;
   }
 
   @media (max-width: 640px) {
     .brand-subtitle {
-      font-size: 12px; /* Smaller on mobile */
-      margin-top: -4px;
       padding-right: 4px;
+      margin-top: -4px;
+      font-size: 12px;
     }
   }
 
@@ -228,7 +278,7 @@
   }
 
   .brand-subtitle-footer {
-    font-size: 12px;
     margin-top: -4px;
+    font-size: 12px;
   }
 }

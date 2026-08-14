@@ -1,49 +1,48 @@
-import { Component } from 'react'
-import type { ErrorInfo, ReactNode } from 'react'
+import type { ErrorInfo, ReactNode } from "react";
+import { Component } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 interface State {
-  hasError: boolean
+  hasError: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
+  state: State = {
     hasError: false,
+  };
+
+  static getDerivedStateFromError(_error: Error): State {
+    return { hasError: true };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static getDerivedStateFromError(_error: Error): State {
-    return { hasError: true }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Uncaught error:", error, errorInfo);
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo)
-  }
-
-  public render() {
+  render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <div className="text-center px-4">
-            <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
-            <p className="text-muted-foreground mb-6">
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <div className="px-4 text-center">
+            <h1 className="mb-4 font-bold text-2xl">Something went wrong</h1>
+            <p className="mb-6 text-muted-foreground">
               We're sorry, but something unexpected happened.
             </p>
             <button
+              className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              type="button"
             >
               Reload Page
             </button>
           </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
-
