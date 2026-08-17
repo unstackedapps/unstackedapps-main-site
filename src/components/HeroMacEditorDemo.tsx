@@ -540,7 +540,27 @@ export function HeroMacEditorDemo({
 }: {
   reducedMotion: boolean;
 }) {
-  const [_cycle, setCycle] = useState(0);
+  const [cycle, setCycle] = useState(0);
+  const handleLoop = useCallback(() => {
+    setCycle((n) => n + 1);
+  }, []);
+
+  return (
+    <HeroMacEditorDemoPlayback
+      key={reducedMotion ? "static" : `cycle-${cycle}`}
+      onLoop={handleLoop}
+      reducedMotion={reducedMotion}
+    />
+  );
+}
+
+function HeroMacEditorDemoPlayback({
+  onLoop,
+  reducedMotion,
+}: {
+  onLoop: () => void;
+  reducedMotion: boolean;
+}) {
   const [phase, setPhase] = useState<Phase>(
     reducedMotion ? "browser-scroll" : "idle"
   );
@@ -704,19 +724,29 @@ export function HeroMacEditorDemo({
       return;
     }
 
-    const id = window.setTimeout(() => {
-      if (cursorTarget === "preview") {
-        moveCursorTo(previewButtonRef.current);
-      } else if (cursorTarget === "tab" && pendingFileIndex !== null) {
-        moveCursorTo(tabRefs.current[pendingFileIndex]);
-      } else if (cursorTarget === "explorer" && pendingFileIndex !== null) {
-        moveCursorTo(explorerRefs.current[pendingFileIndex]);
+    const timeouts: number[] = [];
+
+    timeouts.push(
+      window.setTimeout(() => {
+        if (cursorTarget === "preview") {
+          moveCursorTo(previewButtonRef.current);
+        } else if (cursorTarget === "tab" && pendingFileIndex !== null) {
+          moveCursorTo(tabRefs.current[pendingFileIndex]);
+        } else if (cursorTarget === "explorer" && pendingFileIndex !== null) {
+          moveCursorTo(explorerRefs.current[pendingFileIndex]);
+        }
+
+        timeouts.push(
+          window.setTimeout(() => setPhase("cursor-click"), CURSOR_MOVE_MS)
+        );
+      }, 80)
+    );
+
+    return () => {
+      for (const timeoutId of timeouts) {
+        window.clearTimeout(timeoutId);
       }
-
-      window.setTimeout(() => setPhase("cursor-click"), CURSOR_MOVE_MS);
-    }, 80);
-
-    return () => window.clearTimeout(id);
+    };
   }, [cursorTarget, moveCursorTo, pendingFileIndex, phase, reducedMotion]);
 
   useEffect(() => {
@@ -778,6 +808,7 @@ export function HeroMacEditorDemo({
 
     let scrollStart = 0;
     const clickTimeouts: number[] = [];
+    let doneTimeout = 0;
 
     const animate = (now: number) => {
       if (!contactsClickDoneRef.current) {
@@ -796,7 +827,7 @@ export function HeroMacEditorDemo({
       if (rawProgress < 1) {
         scrollRafRef.current = window.requestAnimationFrame(animate);
       } else {
-        window.setTimeout(() => setPhase("done"), 250);
+        doneTimeout = window.setTimeout(() => setPhase("done"), 250);
       }
     };
 
@@ -833,6 +864,7 @@ export function HeroMacEditorDemo({
 
     return () => {
       window.cancelAnimationFrame(scrollRafRef.current);
+      window.clearTimeout(doneTimeout);
       for (const id of clickTimeouts) {
         window.clearTimeout(id);
       }
@@ -844,9 +876,9 @@ export function HeroMacEditorDemo({
       return;
     }
 
-    const id = window.setTimeout(() => setCycle((n) => n + 1), LOOP_PAUSE_MS);
+    const id = window.setTimeout(onLoop, LOOP_PAUSE_MS);
     return () => window.clearTimeout(id);
-  }, [phase, reducedMotion]);
+  }, [onLoop, phase, reducedMotion]);
 
   const titleLabel = showBrowser ? (
     <BrowserTabLabel />

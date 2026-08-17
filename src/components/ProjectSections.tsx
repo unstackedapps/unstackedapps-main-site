@@ -71,7 +71,7 @@ export function ProjectSections({ onPreview }: ProjectSectionsProps) {
             id={`projects-${section.id}`}
             key={section.id}
           >
-            <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
+            <div className="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-28">
               <ScrollFade>
                 <div className="relative">
                   <div
@@ -79,70 +79,62 @@ export function ProjectSections({ onPreview }: ProjectSectionsProps) {
                     className={`pointer-events-none absolute top-0 -left-3 hidden h-full w-px bg-gradient-to-b md:block ${brandClasses.accentLine}`}
                   />
 
-                  <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between md:gap-10">
-                    <div className="max-w-md shrink-0">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`inline-flex size-9 items-center justify-center rounded-lg border ${brandClasses.accentBorder} ${brandClasses.accentBg}`}
-                        >
-                          <SectionIcon
-                            className={`size-4 ${brandClasses.accentText}`}
-                          />
-                        </span>
-                        <p
-                          className={`font-medium text-[11px] uppercase tracking-[0.18em] ${brandClasses.eyebrow}`}
-                          style={{
-                            fontFamily:
-                              "var(--font-raleway, 'Raleway', sans-serif)",
-                          }}
-                        >
-                          {section.eyebrow}
-                        </p>
-                      </div>
-
-                      <h3
-                        className="mt-4 font-light text-2xl tracking-tight md:text-3xl"
-                        style={{
-                          fontFamily:
-                            "var(--font-raleway, 'Raleway', sans-serif)",
-                        }}
-                      >
-                        {section.title}
-                      </h3>
-                      <p
-                        className={`mt-3 text-sm leading-relaxed md:text-base ${brandClasses.textSubtle}`}
-                      >
-                        {section.description}
-                      </p>
-
-                      <div className="mt-5 flex items-center gap-2 text-[#f3efe6]/40 text-xs">
-                        <DecorIcon
-                          className={`size-3.5 ${brandClasses.accentText}`}
-                        />
-                        <span>
-                          {projects.length} project
-                          {projects.length === 1 ? "" : "s"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`grid flex-1 gap-6 ${
-                        projects.length > 1 ? "sm:grid-cols-2" : "max-w-xl"
-                      }`}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`inline-flex size-9 items-center justify-center rounded-lg border ${brandClasses.accentBorder} ${brandClasses.accentBg}`}
                     >
-                      {projects.map((project, index) => (
-                        <ScrollFade delay={0.06 * (index + 1)} key={project.id}>
-                          <ProjectCard
-                            onPreview={onPreview}
-                            project={project}
-                          />
-                        </ScrollFade>
-                      ))}
-                    </div>
+                      <SectionIcon
+                        className={`size-4 ${brandClasses.accentText}`}
+                      />
+                    </span>
+                    <p
+                      className={`font-medium text-[11px] uppercase tracking-[0.18em] ${brandClasses.eyebrow}`}
+                      style={{
+                        fontFamily:
+                          "var(--font-raleway, 'Raleway', sans-serif)",
+                      }}
+                    >
+                      {section.eyebrow}
+                    </p>
+                  </div>
+
+                  <h3
+                    className="mt-4 font-light text-2xl tracking-tight md:text-3xl"
+                    style={{
+                      fontFamily: "var(--font-raleway, 'Raleway', sans-serif)",
+                    }}
+                  >
+                    {section.title}
+                  </h3>
+                  <p
+                    className={`mt-3 max-w-2xl text-sm leading-relaxed md:text-base ${brandClasses.textSubtle}`}
+                  >
+                    {section.description}
+                  </p>
+
+                  <div className="mt-5 flex items-center gap-2 text-[#f3efe6]/40 text-xs">
+                    <DecorIcon
+                      className={`size-3.5 ${brandClasses.accentText}`}
+                    />
+                    <span>
+                      {projects.length} project
+                      {projects.length === 1 ? "" : "s"}
+                    </span>
                   </div>
                 </div>
               </ScrollFade>
+
+              <div className="mt-12 space-y-10 md:mt-16 md:space-y-14">
+                {projects.map((project, index) => (
+                  <ScrollFade delay={0.04 * (index + 1)} key={project.id}>
+                    <ProjectCard
+                      imagePosition={index % 2 === 1 ? "right" : "left"}
+                      onPreview={onPreview}
+                      project={project}
+                    />
+                  </ScrollFade>
+                ))}
+              </div>
             </div>
           </section>
         );
