@@ -75,6 +75,28 @@ export const PROJECTS: Project[] = [
   {
     category: "netsuite",
     description:
+      "Cartonization software for NetSuite. A 3D packing plan for every order, plus labels and tracking without leaving NetSuite.",
+    id: "cartonpackpro",
+    links: [
+      {
+        external: true,
+        href: "https://cartonpackpro.com/",
+        icon: "external",
+        label: "Visit Website",
+      },
+    ],
+    logo: "/cartonpackpro.svg",
+    logoClassName: "h-8 w-8 object-contain rounded-md",
+    name: "Carton Pack Pro",
+    preview: "/cartonpackpro-preview.jpg",
+    previewAlt:
+      "Carton Pack Pro homepage with the Pack it once. Pack it right headline and a 3D packing plan of a carton",
+    schemaType: "WebApplication",
+    tags: ["Cartonization", "NetSuite", "3D Pack Plans"],
+  },
+  {
+    category: "netsuite",
+    description:
       "A Chrome extension that enhances your NetSuite experience with customizable preferences and productivity features.",
     id: "suitepreferences",
     links: [
@@ -130,6 +152,28 @@ export const PROJECTS: Project[] = [
     tags: ["AI Assistant", "Source Available", "NetSuite"],
   },
   {
+    category: "netsuite",
+    description:
+      "A detachable browser client for NetSuite's MCP tools. Open source under the MIT license.",
+    id: "headless-ns",
+    links: [
+      {
+        external: true,
+        href: "https://github.com/unstackedapps/headless-ns",
+        icon: "github",
+        label: "View on GitHub",
+      },
+    ],
+    logo: "/headless-ns.svg",
+    logoClassName: "h-8 w-8 object-contain rounded-md",
+    name: "headless-ns",
+    preview: "/headless-ns-preview.jpg",
+    previewAlt:
+      "headless-ns Invoices list showing open NetSuite invoices with due dates, amounts and NetSuite links",
+    schemaType: "SoftwareApplication",
+    tags: ["MCP", "Open Source", "NetSuite"],
+  },
+  {
     category: "automation",
     description:
       "An n8n community node for the Open Dental REST API — automate patients, appointments, payments, and more.",
@@ -156,6 +200,56 @@ export const PROJECTS: Project[] = [
       "n8n-nodes-opendental package page on npmjs.com with install instructions and weekly downloads",
     schemaType: "SoftwareApplication",
     tags: ["n8n", "Open Dental", "Community Node"],
+  },
+  {
+    category: "web",
+    description:
+      "One app for a PTO's books, volunteers and members, for US K–12 PTOs, PTA units and booster clubs.",
+    id: "ptohq",
+    links: [
+      {
+        external: true,
+        href: "https://ptohq.org/",
+        icon: "external",
+        label: "Visit Website",
+      },
+      {
+        external: true,
+        href: "https://ptohq.org/demo-app",
+        icon: "globe",
+        label: "Open the live demo",
+      },
+    ],
+    logo: "/ptohq.svg",
+    logoClassName: "h-8 w-8 object-contain rounded-md",
+    name: "PTO HQ",
+    preview: "/ptohq-preview.jpg",
+    previewAlt:
+      "PTO HQ homepage with the One app for your PTO's books, volunteers and members headline beside the treasurer dashboard",
+    schemaType: "WebApplication",
+    tags: ["Web App", "K–12 PTOs", "AI Assistant"],
+  },
+  {
+    category: "web",
+    description:
+      "Search new and used cars and trucks at Texas dealers, sorted by advertised price, cheapest first. Updated every night.",
+    id: "lotprowl",
+    links: [
+      {
+        external: true,
+        href: "https://www.lotprowl.com/",
+        icon: "external",
+        label: "Visit Website",
+      },
+    ],
+    logo: "/lotprowl.svg",
+    logoClassName: "h-8 w-8 object-contain rounded-md",
+    name: "LotProwl",
+    preview: "/lotprowl-preview.jpg",
+    previewAlt:
+      "LotProwl homepage with a Texas dealer search form over a pickup truck photo",
+    schemaType: "WebSite",
+    tags: ["Search", "Nightly Crawler", "Texas"],
   },
   {
     category: "web",
