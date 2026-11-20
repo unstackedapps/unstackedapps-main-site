@@ -93,7 +93,7 @@ export const PROJECTS: Project[] = [
     ],
     logo: "/suitepreferences.png",
     logoClassName: "h-8 w-8 object-contain rounded-md bg-white",
-    metrics: "5.0 ★ · 500+ users",
+    metrics: "4.6 ★ · 1,000 users",
     name: "SuitePreferences",
     preview: "/suitepreferences-preview.jpg",
     previewAlt:
@@ -104,7 +104,7 @@ export const PROJECTS: Project[] = [
   {
     category: "netsuite",
     description:
-      "An open-source AI assistant for NetSuite that helps you work smarter with intelligent automation and insights.",
+      "A source-available AI assistant for NetSuite that helps you work smarter with intelligent automation and insights.",
     id: "opensuitemcp",
     links: [
       {
@@ -115,7 +115,7 @@ export const PROJECTS: Project[] = [
       },
       {
         external: true,
-        href: "https://github.com/opensuitemcp/opensuitemcp",
+        href: "https://github.com/unstackedapps/opensuitemcp",
         icon: "github",
         label: "View on GitHub",
       },
@@ -127,7 +127,7 @@ export const PROJECTS: Project[] = [
     previewAlt:
       "OpenSuiteMCP Ava chat interface asking about NetSuite data with Gemini Flash model selected",
     schemaType: "SoftwareApplication",
-    tags: ["AI Assistant", "Open Source", "NetSuite"],
+    tags: ["AI Assistant", "Source Available", "NetSuite"],
   },
   {
     category: "automation",
@@ -150,7 +150,6 @@ export const PROJECTS: Project[] = [
     ],
     logo: "/opendental-node.svg",
     logoClassName: "h-8 w-8 object-contain rounded-md",
-    metrics: "400+ weekly downloads",
     name: "Open Dental for n8n",
     preview: "/opendental-node-preview.jpg",
     previewAlt:

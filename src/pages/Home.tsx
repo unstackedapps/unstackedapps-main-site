@@ -84,7 +84,7 @@ export function Home() {
             className="text-[#f3efe6]/45 text-[11px] sm:whitespace-nowrap sm:text-xs"
             style={{ fontFamily: "var(--font-raleway, 'Raleway', sans-serif)" }}
           >
-            SuitePreferences · 5.0★ · 500+ users · OpenSuiteMCP on GitHub
+            SuitePreferences · 4.6★ · 1,000 users · OpenSuiteMCP on GitHub
           </p>
         </div>
       </HeroGeometric>
