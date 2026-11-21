@@ -301,14 +301,7 @@ export const PROJECTS: Project[] = [
     description:
       "A production-ready single-page application built with React, Vite, and Tailwind CSS. Deployed on GitHub Pages with a custom domain.",
     id: "this-website",
-    links: [
-      {
-        external: false,
-        href: "/spa-showcase",
-        icon: "globe",
-        label: "View SPA Examples",
-      },
-    ],
+    links: [],
     logo: "/logo.svg",
     logoClassName: "h-8 w-8 object-contain dark:brightness-0 dark:invert",
     name: "This Website",

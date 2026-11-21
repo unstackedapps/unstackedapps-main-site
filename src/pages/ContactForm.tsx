@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Eyebrow, MarketingPageHeader } from "@/components/MarketingPageHeader";
 import { Seo } from "@/components/Seo";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -152,15 +151,7 @@ const FAQS: { a: ReactNode; q: string }[] = [
       <p>
         This website is a prime example of what we can build! It's a single-page
         application built with React, TypeScript, and Tailwind CSS, deployed on
-        GitHub Pages. You can also check out our{" "}
-        <Link
-          className="text-[#f3efe6] underline underline-offset-4"
-          to="/spa-showcase"
-        >
-          SPA Examples
-        </Link>{" "}
-        page to see interactive demos of user management systems and
-        professional resume portfolios.
+        GitHub Pages.
       </p>
     ),
     q: "Can I see examples of your work?",

@@ -1,5 +1,3 @@
-@import "react-day-picker/style.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -138,32 +136,6 @@
 }
 
 @layer components {
-  /* Remove borders from calendar - override global border styles */
-  .rdp *,
-  .rdp-day,
-  .rdp-button,
-  button.rdp-day,
-  .rdp-nav_button,
-  .rdp-day button,
-  .rdp-cell button,
-  .rdp-cell {
-    border: none !important;
-    border-color: transparent !important;
-    border-style: none !important;
-    border-width: 0 !important;
-  }
-
-  .dark .rdp *,
-  .dark .rdp-day,
-  .dark .rdp-button,
-  .dark button.rdp-day,
-  .dark .rdp-nav_button {
-    border: none !important;
-    border-color: transparent !important;
-    border-style: none !important;
-    border-width: 0 !important;
-  }
-
   .brand-container {
     display: flex;
     flex-direction: column;

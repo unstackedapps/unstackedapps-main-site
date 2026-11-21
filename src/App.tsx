@@ -1,11 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ContactChat } from "./components/ContactChat";
 import { MarketingLayout } from "./components/MarketingLayout";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { ContactForm } from "./pages/ContactForm";
 import { Home } from "./pages/Home";
-import { ResumeDemo } from "./pages/ResumeDemo";
-import { SPAShowcase } from "./pages/SPAShowcase";
 
 function App() {
   return (
@@ -14,9 +12,15 @@ function App() {
       <MarketingLayout>
         <Routes>
           <Route element={<Home />} path="/" />
-          <Route element={<SPAShowcase />} path="/spa-showcase" />
           <Route element={<ContactForm />} path="/contact" />
-          <Route element={<ResumeDemo />} path="/resume-demo" />
+          {/* retired demo pages; old links land on the portfolio */}
+          {["/spa-showcase", "/resume-demo"].map((path) => (
+            <Route
+              element={<Navigate replace to="/#projects" />}
+              key={path}
+              path={path}
+            />
+          ))}
         </Routes>
         <ContactChat />
       </MarketingLayout>
