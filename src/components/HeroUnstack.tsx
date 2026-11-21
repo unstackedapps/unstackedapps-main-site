@@ -12,6 +12,7 @@ import figure from "@/hero/unstack.js?raw";
 interface Handle {
   destroy: () => void;
   pick: (i: number) => void;
+  wave: (on: boolean) => void;
 }
 
 interface Figure {
@@ -65,18 +66,13 @@ const palette = {
 
 type Live = { handle: Handle; play: (on: boolean) => void } | null;
 
-// The hero lap: top tile first, one tile further down each beat, then back to rest.
-const LAP = [...TILES.keys()].reverse().concat(-1);
-const BEAT_MS = 1400;
-const REST_MS = 2400;
-
-// A picked tile holds the stack; none hands it back to the lap.
+// A picked tile holds the stack; none hands it back to the idle slinky.
 function settle(live: Live, tile: number | null) {
   if (!live) {
     return;
   }
-  live.play(tile === null);
   live.handle.pick(tile ?? -1);
+  live.play(tile === null);
 }
 
 /** `active` is the tile of the project panel in view, or null in the hero. */
@@ -100,30 +96,15 @@ export function HeroUnstack({ active }: { active: number | null }) {
       },
     };
     const handle = unstack.mount({ read, stage, svg }, unstack.range[1]);
-    // The lap plays in order until a pointer or a panel takes the stack over.
-    let timer = 0;
-    let step = 0;
-    const beat = () => {
-      const tile = LAP[step];
-      handle.pick(tile);
-      step = (step + 1) % LAP.length;
-      timer = window.setTimeout(beat, tile < 0 ? REST_MS : BEAT_MS);
-    };
-    const play = (on: boolean) => {
-      window.clearTimeout(timer);
-      if (on && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        step = 0;
-        timer = window.setTimeout(beat, BEAT_MS);
-      }
-    };
-    const hand = () => play(false);
+    // Until a panel or a pointer picks a tile, the stack plays a slow slinky with nothing lit.
+    const play = (on: boolean) =>
+      handle.wave(
+        on && !matchMedia("(prefers-reduced-motion: reduce)").matches
+      );
     const handBack = () => play(activeRef.current === null);
-    stage.addEventListener("pointerenter", hand);
     stage.addEventListener("pointerleave", handBack);
     live.current = { handle, play };
     return () => {
-      window.clearTimeout(timer);
-      stage.removeEventListener("pointerenter", hand);
       stage.removeEventListener("pointerleave", handBack);
       handle.destroy();
       svg.remove();

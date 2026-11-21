@@ -68,23 +68,46 @@ function mount({ stage, svg, read }, value) {
     t.dots.forEach((el, k) => place(el, P(t.x0 + 10 + k * 5, t.y0 + 8, z1)));
   }
 
+  // the slinky: each gap breathes on a slow sine, a beat behind the one below, so a wave climbs the stack
+  const WAVE_MS = 7000, PHASE = 0.7, SWELL = 5, EASE_IN_MS = 1800;
+  let waving = false, waveFrom = 0;
+  function waveLift(i, now) {
+    let z = 0;
+    for (let j = 1; j <= i; j++) z += SWELL * (1 + Math.sin((now / WAVE_MS) * 2 * Math.PI - j * PHASE)) / 2;
+    return z;
+  }
+  function lift(t, now) {
+    const base = tval(t.z, now);
+    if (!waving) return base;
+    const k = clamp((now - waveFrom) / EASE_IN_MS, 0, 1), e = k * k * (3 - 2 * k);
+    return base + (waveLift(t.i, now) - base) * e;
+  }
+  function stopWave(now) {
+    if (!waving) return;
+    // hand each tile back to its tween from exactly where the wave left it
+    for (const t of tiles) t.z = tween(lift(t, now));
+    waving = false;
+    act = -2;
+  }
+
   const L = register(stage, (_dt, now) => {
-    let moving = false;
-    for (const t of tiles) { draw(t, tval(t.z, now)); if (!tdone(t.z, now)) moving = true; }
+    let moving = waving;
+    for (const t of tiles) { draw(t, lift(t, now)); if (!tdone(t.z, now)) moving = true; }
     return moving;
   });
   bag.add(L.unregister);
 
   let act = -2;
   function mark(a) {
-    // one bright place: the pick, or the top tile at rest
-    const lit = a < 0 ? N - 1 : a;
+    // one bright place: the pick, the top tile at rest, or none while the slinky plays
+    const lit = a === null ? -1 : a < 0 ? N - 1 : a;
     tiles.forEach((t) => {
       t.s.sil.classList.toggle("hi", t.i === lit);
       t.dots.forEach((el) => { el.setAttribute("class", t.i === lit ? "dot" : "dot off"); });
     });
   }
   function setActive(a) {
+    stopWave(performance.now());
     if (a === act) return;
     const now = performance.now(), from = a >= 0 ? a : Math.max(act, 0);
     act = a;
@@ -98,13 +121,27 @@ function mount({ stage, svg, read }, value) {
   }
 
   setActive(-1);
-  bag.add(pointer(stage, { move: (p) => setActive(hit(p)), leave: () => setActive(-1) }));
+  // over empty space the slinky keeps playing; only a tile under the pointer ends it
+  bag.add(pointer(stage, {
+    move: (p) => { const h = hit(p); if (!(waving && h < 0)) setActive(h); },
+    leave: () => { if (!waving) setActive(-1); },
+  }));
   bag.add(() => svg.replaceChildren());
 
   return {
     set: (v) => { gap = v; const a = act; act = -2; setActive(a); },
     // a page control outside the figure (the product row) picks a tile, or -1 for rest
     pick: (i) => setActive(i),
+    // the page's idle state: a slow slinky with nothing picked; any pick ends it
+    wave: (on) => {
+      if (!on) return stopWave(performance.now());
+      if (waving) return;
+      waving = true;
+      waveFrom = performance.now();
+      mark(null);
+      read.textContent = "rest";
+      L.wake();
+    },
     destroy: bag.dispose,
   };
 }
