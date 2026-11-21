@@ -72,8 +72,7 @@ function mount({ stage, svg, read }, value) {
     t.dots.forEach((el, k) => place(el, at(t.x0 + 7.5 + k * 3.5, t.y0 + 6.5)));
   }
 
-  // the idle scatter: a burst throws every tile off the top; each falls to its own random spot and angle
-  // inside the page's area and bounces as it lands; then one by one, bottom tile first, each shakes, faster and faster, and snaps home
+  // the idle scatter: a burst throws every tile up; each lands at its own spot and angle in the page's area, then is summoned home
   const rnd = (a, b) => a + Math.random() * (b - a);
   let bursting = false, nextBurst = 0, reach = 1, area = null;
   for (const t of tiles) { t.cx = t.x0 + W / 2; t.cy = t.y0 + D / 2; t.back = tween(0); t.off = { dx: 0, dy: 0, ang: 0 }; t.legs = []; }
@@ -88,8 +87,9 @@ function mount({ stage, svg, read }, value) {
     let landed = now;
     for (const t of tiles) {
       const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, up = N - 1 - t.i;
-      const t0 = now + up * 400 + rnd(0, 60), t1 = t0 + 1500 + rnd(0, 120);
-      t.legs = [{ t0, t1, a: home, b: spot(t, a), h: reach * rnd(260, 520), bounce: rnd(8, 22) * Math.sqrt(reach), bd: rnd(240, 400), br: rnd(0.2, 0.42) }]; t.home = home;
+      // each its own height, from a low pop to far off the top; airtime grows with sqrt(height), as a real throw
+      const hb = 40 + 560 * Math.random() ** 1.4, t0 = now + up * 400 + rnd(0, 60), t1 = t0 + 1500 * Math.sqrt(hb / 400) + rnd(0, 120);
+      t.legs = [{ t0, t1, a: home, b: spot(t, a), h: reach * hb, bounce: rnd(8, 22) * Math.sqrt(reach), bd: rnd(240, 400), br: rnd(0.2, 0.42) }]; t.home = home;
       landed = Math.max(landed, t1);
     }
     let at = landed + 900 + rnd(700, 1300);
