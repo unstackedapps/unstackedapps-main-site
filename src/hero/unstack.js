@@ -90,7 +90,7 @@ function mount({ stage, svg, read }, value) {
     let landed = now;
     for (const t of tiles) {
       const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, up = N - 1 - t.i;
-      const t0 = now + up * 90 + rnd(0, 80), t1 = now + 1500 + up * 170 + rnd(0, 60);
+      const t0 = now + up * 400 + rnd(0, 60), t1 = t0 + 1500 + rnd(0, 120);
       t.legs = [{ t0, t1, a: home, b: heap(t, hx, hy), h: reach * rnd(260, 520), bounce: 34 * Math.sqrt(reach) }]; t.home = home;
       landed = Math.max(landed, t1);
     }
