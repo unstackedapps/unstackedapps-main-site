@@ -12,7 +12,7 @@ import figure from "@/hero/unstack.js?raw";
 interface Handle {
   destroy: () => void;
   pick: (i: number) => void;
-  wave: (on: boolean) => void;
+  wave: (on: boolean, reach: number) => void;
 }
 
 interface Figure {
@@ -87,7 +87,12 @@ export function HeroUnstack({ active }: { active: number | null }) {
     HL.inject(document);
     const svg = HL.mk(
       "svg",
-      { "aria-hidden": "true", viewBox: "0 0 400 320" },
+      // overflow: the idle fountain throws tiles well past the stage
+      {
+        "aria-hidden": "true",
+        style: "overflow: visible",
+        viewBox: "0 0 400 320",
+      },
       stage
     );
     const read = {
@@ -96,10 +101,12 @@ export function HeroUnstack({ active }: { active: number | null }) {
       },
     };
     const handle = unstack.mount({ read, stage, svg }, unstack.range[1]);
-    // Until a panel or a pointer picks a tile, the stack plays a slow slinky with nothing lit.
+    // Until a panel or a pointer picks a tile, the tiles fountain with nothing lit.
+    // Phones throw low, because the hero text sits right above the stack there.
     const play = (on: boolean) =>
       handle.wave(
-        on && !matchMedia("(prefers-reduced-motion: reduce)").matches
+        on && !matchMedia("(prefers-reduced-motion: reduce)").matches,
+        matchMedia("(min-width: 1024px)").matches ? 1 : 0.3
       );
     const handBack = () => play(activeRef.current === null);
     stage.addEventListener("pointerleave", handBack);
@@ -129,7 +136,7 @@ export function HeroUnstack({ active }: { active: number | null }) {
           style={palette}
         />
       </div>
-      <ul className="relative z-10 mt-10 flex flex-wrap justify-center gap-2 sm:gap-2.5">
+      <ul className="relative z-10 mt-10 flex flex-wrap justify-center gap-1.5 sm:gap-2.5">
         {TILES.map((p, i) => ({ i, p }))
           .reverse()
           .map(({ i, p }) => (
