@@ -65,7 +65,7 @@ export function Home() {
 
       <div className="mx-auto grid max-w-7xl gap-x-14 px-5 md:px-8 lg:grid-cols-2">
         <section
-          className="flex flex-col justify-center pt-14 pb-10 lg:min-h-[calc(100dvh-4rem)] lg:py-0"
+          className="relative z-10 flex flex-col justify-center pt-14 pb-10 lg:min-h-[calc(100dvh-4rem)] lg:py-0"
           data-tile={-1}
         >
           <motion.p
