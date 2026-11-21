@@ -73,7 +73,7 @@ function mount({ stage, svg, read }, value) {
   }
 
   // the idle scatter: a burst throws every tile off the top; each falls to its own random spot and angle
-  // inside the page's area and bounces as it lands; then they hop home one by one, bottom tile first
+  // inside the page's area and bounces as it lands; then one by one, bottom tile first, each shakes, faster and faster, and snaps home
   const rnd = (a, b) => a + Math.random() * (b - a);
   let bursting = false, nextBurst = 0, reach = 1, area = null;
   for (const t of tiles) { t.cx = t.x0 + W / 2; t.cy = t.y0 + D / 2; t.back = tween(0); t.off = { dx: 0, dy: 0, ang: 0 }; t.legs = []; }
@@ -92,11 +92,11 @@ function mount({ stage, svg, read }, value) {
       t.legs = [{ t0, t1, a: home, b: spot(t, a), h: reach * rnd(260, 520), bounce: rnd(8, 22) * Math.sqrt(reach), bd: rnd(240, 400), br: rnd(0.2, 0.42) }]; t.home = home;
       landed = Math.max(landed, t1);
     }
-    const back = landed + 900 + rnd(700, 1300);
-    for (const t of tiles) t.legs.push({ t0: back + t.i * 380, t1: back + t.i * 380 + 700, a: t.legs[0].b, b: t.home, h: reach * rnd(40, 80), bounce: rnd(2, 6), bd: rnd(150, 250), br: rnd(0.2, 0.35) });
-    nextBurst = back + N * 380 + 700 + rnd(1400, 2400);
+    let at = landed + 900 + rnd(700, 1300);
+    for (const t of tiles) { const wig = rnd(650, 950); t.legs.push({ t0: at, wig, t1: at + wig + 180, a: t.legs[0].b, b: t.home, h: 0, bounce: rnd(2, 6), bd: rnd(150, 250), br: rnd(0.2, 0.35) }); at += wig; }
+    nextBurst = at + 900 + rnd(1400, 2400);
   }
-  // a landing: parabolic hops, each tile its own; every hop br as high, and quicker by sqrt(br), as a real one
+  // a landing: parabolic hops, each br as high and sqrt(br) as long; a summoned tile (wig) shakes, then snaps home straight
   function hop(leg, now) {
     let s = now - leg.t1, h = leg.bounce, d = leg.bd;
     while (s > d && h > 0.5) { s -= d; h *= leg.br; d *= Math.sqrt(leg.br); }
@@ -105,8 +105,9 @@ function mount({ stage, svg, read }, value) {
   function pose(t, now) {
     let f = { lift: tval(t.z, now), dx: 0, dy: 0, ang: 0 };
     for (const leg of bursting ? t.legs : []) {
-      if (now < leg.t0) break;
-      const u = clamp((now - leg.t0) / (leg.t1 - leg.t0), 0, 1), m = (key) => lerp(leg.a[key], leg.b[key], u);
+      const s0 = leg.t0 + (leg.wig || 0), k = (now - leg.t0) / leg.wig, w = k * k * Math.sin(k * (10 + 40 * k));
+      if (now < leg.t0 || (now < s0 && (f = { ...f, ang: f.ang + 0.2 * w, lift: f.lift + 2.5 * Math.abs(w) }))) break;
+      const u = clamp((now - s0) / (leg.t1 - s0), 0, 1), m = (key) => lerp(leg.a[key], leg.b[key], leg.wig ? u * u : u);
       f = { lift: m("lift") + leg.h * 4 * u * (1 - u) + hop(leg, now), dx: m("dx"), dy: m("dy"), ang: m("ang") };
     }
     const k = tval(t.back, now);
