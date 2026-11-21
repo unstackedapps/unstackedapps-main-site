@@ -12,6 +12,14 @@ import figure from "@/hero/unstack.js?raw";
 interface Handle {
   destroy: () => void;
   pick: (i: number) => void;
+  screens: (
+    draw: (
+      tile: number,
+      slot: SVGGElement,
+      outline: string,
+      face: number[]
+    ) => void
+  ) => void;
   wave: (
     on: boolean,
     reach: number,
@@ -63,6 +71,43 @@ export const TILES = [
   "cartonpackpro",
 ].map((id) => PROJECTS.find((p) => p.id === id) as (typeof PROJECTS)[number]);
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/** Hangs each app's screenshot on its tablet's screen; the figure reports where that screen is each frame. */
+function hangScreens(handle: Handle) {
+  const hung = new Map<
+    number,
+    { clip: SVGPathElement; img: SVGImageElement }
+  >();
+  handle.screens((tile, slot, outline, face) => {
+    let screen = hung.get(tile);
+    if (!screen) {
+      const clipPath = document.createElementNS(SVG_NS, "clipPath");
+      clipPath.id = `unstack-screen-${tile}`;
+      const clip = document.createElementNS(SVG_NS, "path");
+      clipPath.append(clip);
+      const frame = document.createElementNS(SVG_NS, "g");
+      frame.setAttribute("clip-path", `url(#${clipPath.id})`);
+      const img = document.createElementNS(SVG_NS, "image");
+      img.setAttribute("href", TILES[tile].preview ?? "");
+      // Screenshots are 1024 wide; slice fills the screen's 86 x 46 face and crops the rest.
+      img.setAttribute("width", "1024");
+      img.setAttribute("height", "560");
+      img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+      frame.append(img);
+      slot.append(clipPath, frame);
+      screen = { clip, img };
+      hung.set(tile, screen);
+    }
+    const [ax, ay, bx, by, x, y] = face;
+    screen.clip.setAttribute("d", outline);
+    screen.img.setAttribute(
+      "transform",
+      `matrix(${ax / 1024} ${ay / 1024} ${bx / 560} ${by / 560} ${x} ${y})`
+    );
+  });
+}
+
 const palette = {
   "--hairline-hi": "#f3efe6",
   "--hairline-plate": "#141c27",
@@ -105,6 +150,7 @@ export function HeroUnstack({ active }: { active: number | null }) {
       },
     };
     const handle = unstack.mount({ read, stage, svg }, unstack.range[1]);
+    hangScreens(handle);
     // Until a panel or a pointer picks a tile, the tiles scatter and return with nothing lit.
     // They land anywhere on the visible screen below the sticky header; phones throw low.
     // The screen's rect goes to the figure in the stage's viewBox units (400 wide).

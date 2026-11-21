@@ -282,3 +282,12 @@
     font-size: 12px;
   }
 }
+
+/* Unstack screenshots: dim on every tablet but the picked one, whose outline the figure lights */
+[data-hairline] image {
+  opacity: 0.55;
+  transition: opacity 260ms ease;
+}
+[data-hairline] g:has(> path.hi) image {
+  opacity: 1;
+}

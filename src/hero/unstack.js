@@ -23,16 +23,18 @@ function mount({ stage, svg, read }, value) {
   const P = proj(C), front = facing(C);
 
   const g = mk("g", {}, svg);
+  let onScreen = null;
 
   const tiles = [];
   for (let i = 0; i < N; i++) {
     const x0 = DX[i], y0 = DY[i];
     const [ring, inner] = rings(x0, y0, x0 + W, y0 + D, R, B);
     const screen = rrect(x0 + 9, y0 + 15, x0 + W - 9, y0 + D - 9, 4, 4);
-    const s = solid(g);
+    // an empty slot on the screen: the page may hang this app's picture in it (screens())
+    const s = solid(g), pic = mk("g", {}, s.g);
     const scr = mk("path", { class: "nf lo" }, s.g);
     const dots = [0, 1, 2].map(() => mk("circle", { r: 1.3, class: "dot off" }, s.g));
-    tiles.push({ i, x0, y0, ring, inner, screen, s, scr, dots, z: tween(REST[i]), last: null });
+    tiles.push({ i, x0, y0, ring, inner, screen, s, pic, scr, dots, z: tween(REST[i]), last: null });
   }
 
   // hit areas: each tile's RESTING silhouette, top tile first. They never move.
@@ -40,14 +42,10 @@ function mount({ stage, svg, read }, value) {
     const z0 = t.i * T + REST[t.i];
     return hull(ringAt(P, t.ring, z0).concat(ringAt(P, t.ring, z0 + T)));
   });
-  const inside = (pts, [x, y]) => {
-    let c = false;
-    for (let a = 0, b = pts.length - 1; a < pts.length; b = a++) {
-      const [xa, ya] = pts[a], [xb, yb] = pts[b];
-      if ((ya > y) !== (yb > y) && x < ((xb - xa) * (y - ya)) / (yb - ya) + xa) c = !c;
-    }
-    return c;
-  };
+  const inside = (pts, [x, y]) => pts.reduce((c, [xa, ya], a) => {
+    const [xb, yb] = pts[(a + pts.length - 1) % pts.length];
+    return (ya > y) !== (yb > y) && x < ((xb - xa) * (y - ya)) / (yb - ya) + xa ? !c : c;
+  }, false);
   function hit(p) {
     for (let i = N - 1; i >= 0; i--) if (inside(restHull[i], p)) return i;
     return -1;
@@ -66,32 +64,32 @@ function mount({ stage, svg, read }, value) {
     const c = Math.cos(f.ang), sn = Math.sin(f.ang), go = (r) => (f.dx || f.dy || f.ang ? turn(r, t, c, sn, f.dx, f.dy) : r);
     const ring = go(t.ring), inner = go(t.inner), screen = go(t.screen);
     put(t.s, prism(P, front, ring, inner, z0, z1));
-    t.scr.setAttribute("d", poly(ringAt(P, screen, z1)));
-    t.dots.forEach((el, k) => {
-      const u = t.x0 + 10 + k * 5 - t.cx, v = t.y0 + 8 - t.cy;
-      place(el, P(t.cx + u * c - v * sn + f.dx, t.cy + u * sn + v * c + f.dy, z1));
-    });
+    const at = (x, y) => P(t.cx + (x - t.cx) * c - (y - t.cy) * sn + f.dx, t.cy + (x - t.cx) * sn + (y - t.cy) * c + f.dy, z1);
+    const sd = poly(ringAt(P, screen, z1)), p0 = at(t.x0 + 9, t.y0 + 15), p1 = at(t.x0 + W - 9, t.y0 + 15), p2 = at(t.x0 + 9, t.y0 + D - 9);
+    t.scr.setAttribute("d", sd);
+    // the screen's face for the page: its outline, and an affine map of the unit square onto it
+    if (onScreen) onScreen(t.i, t.pic, sd, [p1[0] - p0[0], p1[1] - p0[1], p2[0] - p0[0], p2[1] - p0[1], p0[0], p0[1]]);
+    t.dots.forEach((el, k) => place(el, at(t.x0 + 10 + k * 5, t.y0 + 8)));
   }
 
-  // the idle scatter: a burst throws every tile off the top; they fall into one heap at the bottom of
-  // the page's area, top tile first so tile 0 lands last, on top, and each bounces as it lands;
-  // then they hop home one by one, bottom tile first, which is always the top of the heap
+  // the idle scatter: a burst throws every tile off the top; each falls to its own random spot and angle
+  // inside the page's area and bounces as it lands; then they hop home one by one, bottom tile first
   const rnd = (a, b) => a + Math.random() * (b - a);
   let bursting = false, nextBurst = 0, reach = 1, area = null;
   for (const t of tiles) { t.cx = t.x0 + W / 2; t.cy = t.y0 + D / 2; t.back = tween(0); t.off = { dx: 0, dy: 0, ang: 0 }; t.legs = []; }
-  function heap(t, hx, hy) {
-    // a spot near the heap's centre (viewBox units), raised one layer for every tile already down
-    const [wx, wy] = unproj(C, hx + rnd(-70, 70), hy + rnd(-30, 0), T / 2);
-    return { dx: wx - t.cx, dy: wy - t.cy, lift: (N - 1 - t.i) * T * 0.9 - t.i * T, ang: rnd(-1.4, 1.4) };
+  function spot(t, a) {
+    // a random point inside the area (viewBox units), inset by half a tile, read back as a floor position
+    const x0 = a.left + 110, x1 = a.right - 110, y0 = a.top + 70, y1 = a.bottom - 60;
+    const [wx, wy] = unproj(C, x1 > x0 ? rnd(x0, x1) : (x0 + x1) / 2, y1 > y0 ? rnd(y0, y1) : (y0 + y1) / 2, T / 2);
+    return { dx: wx - t.cx, dy: wy - t.cy, lift: -t.i * T, ang: rnd(-1.4, 1.4) };
   }
   function plan(now) {
     const a = area ? area() : { left: 0, right: 400, top: 0, bottom: 320 };
-    const x0 = a.left + 180, x1 = a.right - 180, hx = x1 > x0 ? rnd(x0, x1) : (x0 + x1) / 2, hy = a.bottom - 70;
     let landed = now;
     for (const t of tiles) {
       const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, up = N - 1 - t.i;
       const t0 = now + up * 400 + rnd(0, 60), t1 = t0 + 1500 + rnd(0, 120);
-      t.legs = [{ t0, t1, a: home, b: heap(t, hx, hy), h: reach * rnd(260, 520), bounce: 34 * Math.sqrt(reach) }]; t.home = home;
+      t.legs = [{ t0, t1, a: home, b: spot(t, a), h: reach * rnd(260, 520), bounce: 34 * Math.sqrt(reach) }]; t.home = home;
       landed = Math.max(landed, t1);
     }
     const back = landed + 900 + rnd(700, 1300);
@@ -176,6 +174,7 @@ function mount({ stage, svg, read }, value) {
     set: (v) => { gap = v; const a = act; act = -2; setActive(a); },
     // a page control outside the figure (the product row) picks a tile, or -1 for rest
     pick: (i) => setActive(i),
+    screens: (fn) => { onScreen = fn; for (const t of tiles) t.last = null; L.wake(); },
     // the page's idle state, nothing lit; any pick ends it. reach scales the throw,
     // area() is the rect, in viewBox units, the tiles may land in
     wave: (on, r = 1, inside = null) => {
