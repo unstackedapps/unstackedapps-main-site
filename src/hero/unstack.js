@@ -89,17 +89,17 @@ function mount({ stage, svg, read }, value) {
     for (const t of tiles) {
       const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, up = N - 1 - t.i;
       const t0 = now + up * 400 + rnd(0, 60), t1 = t0 + 1500 + rnd(0, 120);
-      t.legs = [{ t0, t1, a: home, b: spot(t, a), h: reach * rnd(260, 520), bounce: 34 * Math.sqrt(reach) }]; t.home = home;
+      t.legs = [{ t0, t1, a: home, b: spot(t, a), h: reach * rnd(260, 520), bounce: rnd(8, 22) * Math.sqrt(reach), bd: rnd(240, 400), br: rnd(0.2, 0.42) }]; t.home = home;
       landed = Math.max(landed, t1);
     }
     const back = landed + 900 + rnd(700, 1300);
-    for (const t of tiles) t.legs.push({ t0: back + t.i * 380, t1: back + t.i * 380 + 700, a: t.legs[0].b, b: t.home, h: reach * rnd(40, 80), bounce: 9 });
+    for (const t of tiles) t.legs.push({ t0: back + t.i * 380, t1: back + t.i * 380 + 700, a: t.legs[0].b, b: t.home, h: reach * rnd(40, 80), bounce: rnd(2, 6), bd: rnd(150, 250), br: rnd(0.2, 0.35) });
     nextBurst = back + N * 380 + 700 + rnd(1400, 2400);
   }
-  // a landing: parabolic hops, each about a third as high and 0.6x as long as the one before
+  // a landing: parabolic hops, each tile its own; every hop br as high, and quicker by sqrt(br), as a real one
   function hop(leg, now) {
-    let s = now - leg.t1, h = leg.bounce, d = 300;
-    while (s > d && h > 0.5) { s -= d; h *= 0.35; d *= 0.6; }
+    let s = now - leg.t1, h = leg.bounce, d = leg.bd;
+    while (s > d && h > 0.5) { s -= d; h *= leg.br; d *= Math.sqrt(leg.br); }
     return s > 0 && s < d && h > 0.5 ? h * 4 * (s / d) * (1 - s / d) : 0;
   }
   function pose(t, now) {
