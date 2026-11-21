@@ -11,7 +11,7 @@ const {
 
 const N = 8, W = 104, D = 70, T = 7, R = 9, B = 1.6, SPREAD = 4;
 // bottom to top
-const NAMES = ["b&b co", "od for n8n", "headless-ns", "lotprowl", "suiteprefs", "opensuitemcp", "pto hq", "carton pack pro"];
+const NAMES = ["Branch & Blooms Co.", "Open Dental for n8n", "headless-ns", "LotProwl", "SuitePreferences", "OpenSuiteMCP", "PTO HQ", "Carton Pack Pro"];
 // a loose stack: each tile sits a little off the one below
 const DX = [0, 3, -2, 4, -1, 2, -3, 1], DY = [0, -2, 3, -1, 2, -3, 1, -2];
 // rest is a slight explode at the top, never flat
@@ -103,6 +103,8 @@ function mount({ stage, svg, read }, value) {
 
   return {
     set: (v) => { gap = v; const a = act; act = -2; setActive(a); },
+    // a page control outside the figure (the product row) picks a tile, or -1 for rest
+    pick: (i) => setActive(i),
     destroy: bag.dispose,
   };
 }

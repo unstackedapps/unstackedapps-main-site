@@ -2,7 +2,6 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { HeroUnstack } from "@/components/HeroUnstack";
-import { brandClasses } from "@/config/brand";
 import { cn } from "@/lib/utils";
 
 interface HeroGeometricProps {
@@ -28,7 +27,7 @@ export function HeroGeometric({
   return (
     <section
       className={cn(
-        "mx-auto grid min-h-[calc(100dvh-4.5rem)] w-full max-w-7xl items-center gap-10 px-5 pt-6 pb-16 md:grid-cols-[0.88fr_1.12fr] md:gap-12 md:px-8 md:pt-4 md:pb-20 lg:grid-cols-[0.82fr_1.18fr] lg:gap-14",
+        "mx-auto grid w-full max-w-7xl items-center gap-10 px-5 pt-10 pb-12 md:grid-cols-[0.88fr_1.12fr] md:gap-12 md:px-8 md:pt-16 md:pb-16 lg:grid-cols-[0.82fr_1.18fr] lg:gap-14",
         className
       )}
     >
@@ -82,12 +81,7 @@ export function HeroGeometric({
         initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.98 }}
         transition={{ ...fade, delay: 0.2 }}
       >
-        <div
-          className={`absolute inset-0 rounded-2xl bg-gradient-to-br blur-2xl ${brandClasses.heroGlow}`}
-        />
-        <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-[#141c27]/90 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur-sm">
-          <HeroUnstack />
-        </div>
+        <HeroUnstack />
       </motion.div>
     </section>
   );
