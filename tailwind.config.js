@@ -63,6 +63,7 @@ export default {
         },
       },
       fontFamily: {
+        cormorant: ['"Cormorant Garamond"', "Georgia", "serif"],
         mono: ["Geist Mono", "ui-monospace", "SFMono-Regular", "monospace"],
         raleway: ["Raleway", "sans-serif"],
         sans: ["Inter", "sans-serif"],

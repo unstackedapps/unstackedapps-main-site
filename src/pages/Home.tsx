@@ -85,7 +85,7 @@ export function Home() {
           </motion.h1>
           <motion.p
             {...rise(0.22)}
-            className="mt-6 max-w-lg text-[#f3efe6]/70 text-base leading-relaxed md:text-lg"
+            className="mt-6 max-w-lg font-cormorant font-light text-[#f3efe6]/80 text-xl italic leading-snug md:text-2xl"
           >
             NetSuite extensions, AI assistants, and SPAs built and shipped for
             production. Flagship work includes{" "}
