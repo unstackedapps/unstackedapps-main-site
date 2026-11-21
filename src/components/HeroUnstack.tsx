@@ -9,8 +9,6 @@ import { PROJECTS } from "@/config/projects";
 import kernel from "@/hero/kernel.js?raw";
 import figure from "@/hero/unstack.js?raw";
 
-type Point = [number, number];
-
 interface Handle {
   destroy: () => void;
   pick: (i: number) => void;
@@ -27,7 +25,6 @@ interface Figure {
     value: number
   ) => Handle;
   range: [number, number, number];
-  tour: (Point | null)[];
 }
 
 interface Hairline {
@@ -37,7 +34,6 @@ interface Hairline {
     attrs: Record<string, string>,
     parent: Element
   ) => SVGSVGElement;
-  tour: (stage: HTMLElement, stops: (Point | null)[]) => { stop: () => void };
 }
 
 // Both files are copied verbatim from the hairline-create skill, so an adjusted figure is a re-copy.
@@ -69,7 +65,12 @@ const palette = {
 
 type Live = { handle: Handle; play: (on: boolean) => void } | null;
 
-// A picked tile holds the stack; none hands it back to the tour.
+// The hero lap: top tile first, one tile further down each beat, then back to rest.
+const LAP = [...TILES.keys()].reverse().concat(-1);
+const BEAT_MS = 1400;
+const REST_MS = 2400;
+
+// A picked tile holds the stack; none hands it back to the lap.
 function settle(live: Live, tile: number | null) {
   if (!live) {
     return;
@@ -82,6 +83,8 @@ function settle(live: Live, tile: number | null) {
 export function HeroUnstack({ active }: { active: number | null }) {
   const [name, setName] = useState("");
   const live = useRef<Live>(null);
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   // A ref callback with a cleanup runs once per element, so the figure mounts once.
   const mountStage = useCallback((stage: HTMLDivElement) => {
@@ -97,19 +100,31 @@ export function HeroUnstack({ active }: { active: number | null }) {
       },
     };
     const handle = unstack.mount({ read, stage, svg }, unstack.range[1]);
-    // The tour plays the lift on its own until a real pointer arrives.
-    let lap = HL.tour(stage, unstack.tour);
-    live.current = {
-      handle,
-      play: (on: boolean) => {
-        lap.stop();
-        if (on) {
-          lap = HL.tour(stage, unstack.tour);
-        }
-      },
+    // The lap plays in order until a pointer or a panel takes the stack over.
+    let timer = 0;
+    let step = 0;
+    const beat = () => {
+      const tile = LAP[step];
+      handle.pick(tile);
+      step = (step + 1) % LAP.length;
+      timer = window.setTimeout(beat, tile < 0 ? REST_MS : BEAT_MS);
     };
+    const play = (on: boolean) => {
+      window.clearTimeout(timer);
+      if (on && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        step = 0;
+        timer = window.setTimeout(beat, BEAT_MS);
+      }
+    };
+    const hand = () => play(false);
+    const handBack = () => play(activeRef.current === null);
+    stage.addEventListener("pointerenter", hand);
+    stage.addEventListener("pointerleave", handBack);
+    live.current = { handle, play };
     return () => {
-      lap.stop();
+      window.clearTimeout(timer);
+      stage.removeEventListener("pointerenter", hand);
+      stage.removeEventListener("pointerleave", handBack);
       handle.destroy();
       svg.remove();
       live.current = null;
