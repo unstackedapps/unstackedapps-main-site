@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core", "ultracite/biome/react"],
   "files": {
-    "includes": ["!dist", "!public", "!node_modules"]
+    "includes": ["!dist", "!public", "!node_modules", "!src/hero"]
   },
   "linter": {
     "rules": {
@@ -42,10 +42,7 @@
       }
     },
     {
-      "includes": [
-        "src/components/HeroMacEditorDemo.tsx",
-        "src/components/LogoCarousel.tsx"
-      ],
+      "includes": ["src/components/LogoCarousel.tsx"],
       "linter": {
         "rules": {
           "suspicious": {

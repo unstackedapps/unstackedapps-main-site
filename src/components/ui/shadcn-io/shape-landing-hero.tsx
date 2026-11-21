@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { HeroMacEditorDemo } from "@/components/HeroMacEditorDemo";
+import { HeroUnstack } from "@/components/HeroUnstack";
 import { brandClasses } from "@/config/brand";
 import { cn } from "@/lib/utils";
 
@@ -85,8 +85,8 @@ export function HeroGeometric({
         <div
           className={`absolute inset-0 rounded-2xl bg-gradient-to-br blur-2xl ${brandClasses.heroGlow}`}
         />
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#141c27]/90 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur-sm">
-          <HeroMacEditorDemo reducedMotion={Boolean(prefersReducedMotion)} />
+        <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-[#141c27]/90 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur-sm">
+          <HeroUnstack />
         </div>
       </motion.div>
     </section>
