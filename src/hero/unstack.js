@@ -73,37 +73,43 @@ function mount({ stage, svg, read }, value) {
     });
   }
 
-  // the idle scatter: a burst throws every tile off the top, each falls to its own spot and angle
-  // on the floor inside the page's area, then they hop home one by one, bottom tile first
+  // the idle scatter: a burst throws every tile off the top; they fall into one heap at the bottom of
+  // the page's area, top tile first so tile 0 lands last, on top, and each bounces as it lands;
+  // then they hop home one by one, bottom tile first, which is always the top of the heap
   const rnd = (a, b) => a + Math.random() * (b - a);
   let bursting = false, nextBurst = 0, reach = 1, area = null;
   for (const t of tiles) { t.cx = t.x0 + W / 2; t.cy = t.y0 + D / 2; t.back = tween(0); t.off = { dx: 0, dy: 0, ang: 0 }; t.legs = []; }
-  function spot(t) {
-    // a random point inside the area (viewBox units), inset by half a tile, read back as a floor position
-    const a = area ? area() : { left: 0, right: 400, top: 0, bottom: 320 };
-    const x0 = a.left + 110, x1 = a.right - 110, y0 = a.top + 70, y1 = a.bottom - 60;
-    const sx = x1 > x0 ? rnd(x0, x1) : (x0 + x1) / 2, sy = y1 > y0 ? rnd(y0, y1) : (y0 + y1) / 2;
-    const [wx, wy] = unproj(C, sx, sy, T / 2);
-    return { dx: wx - t.cx, dy: wy - t.cy, lift: -t.i * T, ang: rnd(-1.4, 1.4) };
+  function heap(t, hx, hy) {
+    // a spot near the heap's centre (viewBox units), raised one layer for every tile already down
+    const [wx, wy] = unproj(C, hx + rnd(-70, 70), hy + rnd(-30, 0), T / 2);
+    return { dx: wx - t.cx, dy: wy - t.cy, lift: (N - 1 - t.i) * T * 0.9 - t.i * T, ang: rnd(-1.4, 1.4) };
   }
   function plan(now) {
+    const a = area ? area() : { left: 0, right: 400, top: 0, bottom: 320 };
+    const x0 = a.left + 180, x1 = a.right - 180, hx = x1 > x0 ? rnd(x0, x1) : (x0 + x1) / 2, hy = a.bottom - 70;
     let landed = now;
     for (const t of tiles) {
-      const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, floor = spot(t);
-      const t0 = now + (N - 1 - t.i) * 90 + rnd(0, 80), t1 = t0 + rnd(1300, 2100);
-      t.legs = [{ t0, t1, a: home, b: floor, h: reach * rnd(260, 520) }]; t.home = home;
+      const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, up = N - 1 - t.i;
+      const t0 = now + up * 90 + rnd(0, 80), t1 = now + 1500 + up * 170 + rnd(0, 60);
+      t.legs = [{ t0, t1, a: home, b: heap(t, hx, hy), h: reach * rnd(260, 520), bounce: 34 * Math.sqrt(reach) }]; t.home = home;
       landed = Math.max(landed, t1);
     }
-    const back = landed + rnd(900, 1600);
-    for (const t of tiles) t.legs.push({ t0: back + t.i * 380, t1: back + t.i * 380 + 700, a: t.legs[0].b, b: t.home, h: reach * rnd(30, 70) });
+    const back = landed + 900 + rnd(700, 1300);
+    for (const t of tiles) t.legs.push({ t0: back + t.i * 380, t1: back + t.i * 380 + 700, a: t.legs[0].b, b: t.home, h: reach * rnd(40, 80), bounce: 9 });
     nextBurst = back + N * 380 + 700 + rnd(1400, 2400);
+  }
+  // a landing: parabolic hops, each about a third as high and 0.6x as long as the one before
+  function hop(leg, now) {
+    let s = now - leg.t1, h = leg.bounce, d = 300;
+    while (s > d && h > 0.5) { s -= d; h *= 0.35; d *= 0.6; }
+    return s > 0 && s < d && h > 0.5 ? h * 4 * (s / d) * (1 - s / d) : 0;
   }
   function pose(t, now) {
     let f = { lift: tval(t.z, now), dx: 0, dy: 0, ang: 0 };
     for (const leg of bursting ? t.legs : []) {
       if (now < leg.t0) break;
       const u = clamp((now - leg.t0) / (leg.t1 - leg.t0), 0, 1), m = (key) => lerp(leg.a[key], leg.b[key], u);
-      f = { lift: m("lift") + leg.h * 4 * u * (1 - u), dx: m("dx"), dy: m("dy"), ang: m("ang") };
+      f = { lift: m("lift") + leg.h * 4 * u * (1 - u) + hop(leg, now), dx: m("dx"), dy: m("dy"), ang: m("ang") };
     }
     const k = tval(t.back, now);
     return k > 0 ? { ...f, dx: f.dx + t.off.dx * k, dy: f.dy + t.off.dy * k, ang: f.ang + t.off.ang * k } : f;
