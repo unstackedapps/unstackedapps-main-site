@@ -69,7 +69,7 @@ function mount({ stage, svg, read }, value) {
   }
 
   // the slinky: each gap breathes on a slow sine, a beat behind the one below, so a wave climbs the stack
-  const WAVE_MS = 7000, PHASE = 0.7, SWELL = 5, EASE_IN_MS = 1800;
+  const WAVE_MS = 2800, PHASE = 0.7, SWELL = 6, EASE_IN_MS = 900;
   let waving = false, waveFrom = 0;
   function waveLift(i, now) {
     let z = 0;
