@@ -1,5 +1,22 @@
 import type { ReactNode } from "react";
 
+/** The small mono label above a heading, in the style of the hero figure's read-out. */
+export function Eyebrow({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p
+      className={`font-mono text-[#f3efe6]/55 text-[11px] uppercase tracking-[0.16em] ${className}`}
+    >
+      {children}
+    </p>
+  );
+}
+
 interface MarketingPageHeaderProps {
   className?: string;
   description?: ReactNode;
@@ -15,22 +32,12 @@ export function MarketingPageHeader({
 }: MarketingPageHeaderProps) {
   return (
     <div className={`mx-auto max-w-3xl ${className}`}>
-      {eyebrow ? (
-        <p
-          className="mb-4 font-medium text-[#f3efe6]/65 text-[11px] uppercase tracking-[0.18em]"
-          style={{ fontFamily: "var(--font-raleway, 'Raleway', sans-serif)" }}
-        >
-          {eyebrow}
-        </p>
-      ) : null}
-      <h1
-        className="font-light text-3xl tracking-tight sm:text-4xl md:text-5xl"
-        style={{ fontFamily: "var(--font-raleway, 'Raleway', sans-serif)" }}
-      >
+      {eyebrow ? <Eyebrow className="mb-4">{eyebrow}</Eyebrow> : null}
+      <h1 className="text-balance font-light font-raleway text-4xl tracking-tight sm:text-5xl md:text-6xl">
         {title}
       </h1>
       {description ? (
-        <p className="mt-4 text-[#f3efe6]/70 text-base leading-relaxed md:text-lg">
+        <p className="mt-5 max-w-2xl text-[#f3efe6]/70 text-base leading-relaxed md:text-lg">
           {description}
         </p>
       ) : null}
@@ -39,4 +46,4 @@ export function MarketingPageHeader({
 }
 
 export const marketingCardClass =
-  "border-white/10 bg-[#141c27]/55 text-[#f3efe6] backdrop-blur-sm shadow-none";
+  "rounded-2xl border-white/10 bg-white/[0.02] text-[#f3efe6] shadow-none";

@@ -95,15 +95,6 @@ export function MobileMenu({ backTo }: MobileMenuProps) {
                   Approach
                 </Link>
               </Button>
-              <Button
-                asChild
-                className="w-full justify-start border-white/15 bg-white/5 text-[#f3efe6] hover:bg-white/10"
-                variant="outline"
-              >
-                <Link onClick={() => setOpen(false)} to="/#features">
-                  About
-                </Link>
-              </Button>
             </>
           )}
 

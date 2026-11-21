@@ -42,17 +42,6 @@
       }
     },
     {
-      "includes": ["src/components/LogoCarousel.tsx"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noArrayIndexKey": "off",
-            "noUnnecessaryConditions": "off"
-          }
-        }
-      }
-    },
-    {
       "includes": ["src/pages/SPAShowcase.tsx", "src/pages/ResumeDemo.tsx"],
       "linter": {
         "rules": {

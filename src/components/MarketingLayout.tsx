@@ -7,7 +7,7 @@ interface MarketingLayoutProps {
 
 export function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
-    <div className="relative min-h-dvh overflow-x-hidden text-[#f3efe6]">
+    <div className="relative min-h-dvh overflow-x-clip text-[#f3efe6]">
       <MarketingAtmosphere />
       <div className="relative z-10">{children}</div>
     </div>

@@ -12,9 +12,9 @@ export default {
         "gradient-shift": "gradient-shift 8s ease-in-out infinite",
         "marketing-sync-spin": "marketing-sync-spin 8s linear infinite",
         "marketing-think-dot": "marketing-think-dot 1.2s ease-in-out infinite",
+        marquee: "marquee 60s linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "slide-in": "slide-in 0.3s ease-out forwards",
-        "tech-rail": "tech-rail 48s linear infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -93,6 +93,10 @@ export default {
           "20%": { opacity: "1", transform: "translateY(-5px)" },
           "40%": { opacity: "0.4", transform: "translateY(0)" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
         "pulse-glow": {
           "0%, 100%": { opacity: "0.8" },
           "50%": { opacity: "1" },
@@ -100,10 +104,6 @@ export default {
         "slide-in": {
           "0%": { opacity: "0", transform: "translateX(-20px)" },
           "100%": { opacity: "1", transform: "translateX(0)" },
-        },
-        "tech-rail": {
-          from: { transform: "translateY(0)" },
-          to: { transform: "translateY(-50%)" },
         },
       },
     },

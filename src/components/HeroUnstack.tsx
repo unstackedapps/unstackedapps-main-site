@@ -1,4 +1,10 @@
-import { type CSSProperties, useCallback, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PROJECTS } from "@/config/projects";
 import kernel from "@/hero/kernel.js?raw";
 import figure from "@/hero/unstack.js?raw";
@@ -45,7 +51,7 @@ const unstack = ((): Figure => {
 })();
 
 // The figure's tiles, bottom to top; its NAMES match these project names.
-const TILES = [
+export const TILES = [
   "branchandblooms",
   "opendental-n8n",
   "headless-ns",
@@ -61,11 +67,21 @@ const palette = {
   "--hairline-plate": "#141c27",
 } as CSSProperties;
 
-export function HeroUnstack() {
+type Live = { handle: Handle; play: (on: boolean) => void } | null;
+
+// A picked tile holds the stack; none hands it back to the tour.
+function settle(live: Live, tile: number | null) {
+  if (!live) {
+    return;
+  }
+  live.play(tile === null);
+  live.handle.pick(tile ?? -1);
+}
+
+/** `active` is the tile of the project panel in view, or null in the hero. */
+export function HeroUnstack({ active }: { active: number | null }) {
   const [name, setName] = useState("");
-  const live = useRef<{ handle: Handle; play: (on: boolean) => void } | null>(
-    null
-  );
+  const live = useRef<Live>(null);
 
   // A ref callback with a cleanup runs once per element, so the figure mounts once.
   const mountStage = useCallback((stage: HTMLDivElement) => {
@@ -100,11 +116,10 @@ export function HeroUnstack() {
     };
   }, []);
 
-  // A hovered or focused logo takes the stack over; leaving it hands back to the tour.
-  const pick = (i: number) => {
-    live.current?.play(i < 0);
-    live.current?.handle.pick(i);
-  };
+  useEffect(() => settle(live.current, active), [active]);
+
+  // A hovered or focused logo takes the stack over; leaving it returns to the panel in view.
+  const pick = (i: number | null) => settle(live.current, i ?? active);
 
   return (
     <div>
@@ -131,10 +146,10 @@ export function HeroUnstack() {
                     : "border-white/10 bg-white/[0.03] opacity-60 hover:opacity-100"
                 }`}
                 href={`#${p.id}`}
-                onBlur={() => pick(-1)}
+                onBlur={() => pick(null)}
                 onFocus={() => pick(i)}
                 onMouseEnter={() => pick(i)}
-                onMouseLeave={() => pick(-1)}
+                onMouseLeave={() => pick(null)}
               >
                 <img
                   alt=""

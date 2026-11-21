@@ -7,14 +7,6 @@ export const BRAND_COLORS = {
   navyMuted: "#101820",
 } as const;
 
-/** Product-specific colors — only for branded project cards / demos */
-export const PRODUCT_COLORS = {
-  opensuitemcp: {
-    blue: "#4a81e8",
-    orange: "#ea580c",
-  },
-} as const;
-
 /** Shared Tailwind class strings for the studio brand */
 export const brandClasses = {
   accentBg: "bg-white/[0.06]",
@@ -39,10 +31,3 @@ export const brandClasses = {
   textMuted: "text-[#f3efe6]/70",
   textSubtle: "text-[#f3efe6]/65",
 } as const;
-
-export function projectCardHoverClass(projectId: string): string {
-  if (projectId === "opensuitemcp") {
-    return "group-hover:border-[#ea580c]/35 group-hover:shadow-[0_0_40px_-12px_rgba(234,88,12,0.35)]";
-  }
-  return "group-hover:border-white/25 group-hover:shadow-[0_0_40px_-12px_rgba(243,239,230,0.1)]";
-}
