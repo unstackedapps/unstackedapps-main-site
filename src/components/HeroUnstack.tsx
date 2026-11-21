@@ -73,7 +73,7 @@ export const TILES = [
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-/** Hangs each app's screenshot on its tablet's screen; the figure reports where that screen is each frame. */
+/** Hangs a code editor showing each app's source on its tablet's screen; the figure reports where that screen is each frame. */
 function hangScreens(handle: Handle) {
   const hung = new Map<
     number,
@@ -89,11 +89,10 @@ function hangScreens(handle: Handle) {
       const frame = document.createElementNS(SVG_NS, "g");
       frame.setAttribute("clip-path", `url(#${clipPath.id})`);
       const img = document.createElementNS(SVG_NS, "image");
-      img.setAttribute("href", TILES[tile].preview ?? "");
-      // Screenshots are 1024 wide; slice fills the screen's 86 x 46 face and crops the rest.
-      img.setAttribute("width", "1024");
-      img.setAttribute("height", "560");
-      img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+      // public/ide/*.svg are 980 x 640, ten pixels per unit of the 98 x 64 screen.
+      img.setAttribute("href", `/ide/${TILES[tile].id}.svg`);
+      img.setAttribute("width", "980");
+      img.setAttribute("height", "640");
       frame.append(img);
       slot.append(clipPath, frame);
       screen = { clip, img };
@@ -103,7 +102,7 @@ function hangScreens(handle: Handle) {
     screen.clip.setAttribute("d", outline);
     screen.img.setAttribute(
       "transform",
-      `matrix(${ax / 1024} ${ay / 1024} ${bx / 560} ${by / 560} ${x} ${y})`
+      `matrix(${ax / 980} ${ay / 980} ${bx / 640} ${by / 640} ${x} ${y})`
     );
   });
 }

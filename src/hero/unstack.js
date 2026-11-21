@@ -29,7 +29,7 @@ function mount({ stage, svg, read }, value) {
   for (let i = 0; i < N; i++) {
     const x0 = DX[i], y0 = DY[i];
     const [ring, inner] = rings(x0, y0, x0 + W, y0 + D, R, B);
-    const screen = rrect(x0 + 9, y0 + 15, x0 + W - 9, y0 + D - 9, 4, 4);
+    const screen = rrect(x0 + 3, y0 + 3, x0 + W - 3, y0 + D - 3, 6, 4);
     // an empty slot on the screen: the page may hang this app's picture in it (screens())
     const s = solid(g), pic = mk("g", {}, s.g);
     const scr = mk("path", { class: "nf lo" }, s.g);
@@ -65,11 +65,11 @@ function mount({ stage, svg, read }, value) {
     const ring = go(t.ring), inner = go(t.inner), screen = go(t.screen);
     put(t.s, prism(P, front, ring, inner, z0, z1));
     const at = (x, y) => P(t.cx + (x - t.cx) * c - (y - t.cy) * sn + f.dx, t.cy + (x - t.cx) * sn + (y - t.cy) * c + f.dy, z1);
-    const sd = poly(ringAt(P, screen, z1)), p0 = at(t.x0 + 9, t.y0 + 15), p1 = at(t.x0 + W - 9, t.y0 + 15), p2 = at(t.x0 + 9, t.y0 + D - 9);
+    const sd = poly(ringAt(P, screen, z1)), p0 = at(t.x0 + 3, t.y0 + 3), p1 = at(t.x0 + W - 3, t.y0 + 3), p2 = at(t.x0 + 3, t.y0 + D - 3);
     t.scr.setAttribute("d", sd);
     // the screen's face for the page: its outline, and an affine map of the unit square onto it
     if (onScreen) onScreen(t.i, t.pic, sd, [p1[0] - p0[0], p1[1] - p0[1], p2[0] - p0[0], p2[1] - p0[1], p0[0], p0[1]]);
-    t.dots.forEach((el, k) => place(el, at(t.x0 + 10 + k * 5, t.y0 + 8)));
+    t.dots.forEach((el, k) => place(el, at(t.x0 + 7.5 + k * 3.5, t.y0 + 6.5)));
   }
 
   // the idle scatter: a burst throws every tile off the top; each falls to its own random spot and angle

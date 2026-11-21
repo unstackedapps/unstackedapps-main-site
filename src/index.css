@@ -283,11 +283,24 @@
   }
 }
 
-/* Unstack screenshots: dim on every tablet but the picked one, whose outline the figure lights */
+/* Unstack code editors: dim on every tablet but the picked one, whose outline the figure lights */
 [data-hairline] image {
   opacity: 0.55;
   transition: opacity 260ms ease;
 }
 [data-hairline] g:has(> path.hi) image {
   opacity: 1;
+}
+/* the editor's window controls, in macOS traffic-light colours, dimmed with the screen */
+[data-hairline] circle.dot:nth-of-type(1) {
+  fill: #ff5f57;
+}
+[data-hairline] circle.dot:nth-of-type(2) {
+  fill: #febc2e;
+}
+[data-hairline] circle.dot:nth-of-type(3) {
+  fill: #28c840;
+}
+[data-hairline] circle.dot.off {
+  opacity: 0.55;
 }
