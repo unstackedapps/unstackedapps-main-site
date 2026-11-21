@@ -87,8 +87,8 @@ export function Home() {
             {...rise(0.22)}
             className="mt-6 max-w-lg text-[#f3efe6]/70 text-base leading-relaxed md:text-lg"
           >
-            NetSuite extensions, AI assistants, and production SPAs — built and
-            shipped in production. Flagship work includes{" "}
+            NetSuite extensions, AI assistants, and SPAs built and shipped for
+            production. Flagship work includes{" "}
             <span className="font-medium text-[#f3efe6]">OpenSuiteMCP</span> and{" "}
             <span className="font-medium text-[#f3efe6]">SuitePreferences</span>
             , plus n8n nodes, integrations, and custom sites.
