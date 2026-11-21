@@ -1,11 +1,7 @@
-/**
- * Unstack: eight app tiles in a loose stack, one per product. The pointer
- * picks a tile by its resting side; every tile above it lifts off, the first
- * gap widest, staggered outwards from the pick on the 700ms curve, so the
- * chosen tile's screen and window dots come into view. The slider is the gap.
- */
+/** Unstack: eight app tiles in a loose stack. Pick one and every tile above it lifts off,
+ * staggered outwards on the 700ms curve, to show its screen. The slider is the gap. */
 const {
-  Cam, fit, hull, poly, proj, facing, prism, rings, ringAt, rrect, clamp,
+  Cam, fit, unproj, lerp, hull, poly, proj, facing, prism, rings, ringAt, rrect, clamp,
   tween, tset, tval, tdone, disposer, mk, place, pointer, register, solid, put,
 } = HL;
 
@@ -77,48 +73,52 @@ function mount({ stage, svg, read }, value) {
     });
   }
 
-  // the fountain: every burst throws each tile up on its own random arc, top tile first,
-  // and gravity brings them home bottom tile first, so none falls through one that has landed
-  const GRAVITY = 350, LAUNCH_MS = 70, LAND_MS = 1700, LAND_GAP_MS = 170;
+  // the idle scatter: a burst throws every tile off the top, each falls to its own spot and angle
+  // on the floor inside the page's area, then they hop home one by one, bottom tile first
   const rnd = (a, b) => a + Math.random() * (b - a);
-  const side = () => (Math.random() < 0.5 ? -1 : 1);
-  let bursting = false, nextBurst = 0, reach = 1;
-  for (const t of tiles) { t.cx = t.x0 + W / 2; t.cy = t.y0 + D / 2; t.back = tween(0); t.off = { dx: 0, dy: 0, ang: 0 }; t.fl = null; }
+  let bursting = false, nextBurst = 0, reach = 1, area = null;
+  for (const t of tiles) { t.cx = t.x0 + W / 2; t.cy = t.y0 + D / 2; t.back = tween(0); t.off = { dx: 0, dy: 0, ang: 0 }; t.legs = []; }
+  function spot(t) {
+    // a random point inside the area (viewBox units), inset by half a tile, read back as a floor position
+    const a = area ? area() : { left: 0, right: 400, top: 0, bottom: 320 };
+    const x0 = a.left + 110, x1 = a.right - 110, y0 = a.top + 70, y1 = a.bottom - 60;
+    const sx = x1 > x0 ? rnd(x0, x1) : (x0 + x1) / 2, sy = y1 > y0 ? rnd(y0, y1) : (y0 + y1) / 2;
+    const [wx, wy] = unproj(C, sx, sy, T / 2);
+    return { dx: wx - t.cx, dy: wy - t.cy, lift: -t.i * T, ang: rnd(-1.4, 1.4) };
+  }
   function plan(now) {
+    let landed = now;
     for (const t of tiles) {
-      const t0 = now + (N - 1 - t.i) * LAUNCH_MS + rnd(0, 60);
-      const t1 = now + LAND_MS + t.i * LAND_GAP_MS + rnd(0, 60);
-      const sec = (t1 - t0) / 1000;
-      const far = Math.sqrt(reach);
-      t.fl = { t0, t1, h: (reach * GRAVITY * sec * sec) / 8 * rnd(0.7, 1.35), dx: side() * rnd(25, 110) * far, dy: side() * rnd(25, 110) * far, spin: rnd(-1.2, 1.2) };
+      const home = { dx: 0, dy: 0, lift: REST[t.i], ang: 0 }, floor = spot(t);
+      const t0 = now + (N - 1 - t.i) * 90 + rnd(0, 80), t1 = t0 + rnd(1300, 2100);
+      t.legs = [{ t0, t1, a: home, b: floor, h: reach * rnd(260, 520) }]; t.home = home;
+      landed = Math.max(landed, t1);
     }
-    nextBurst = now + LAND_MS + (N - 1) * LAND_GAP_MS + 60 + rnd(900, 1900);
+    const back = landed + rnd(900, 1600);
+    for (const t of tiles) t.legs.push({ t0: back + t.i * 380, t1: back + t.i * 380 + 700, a: t.legs[0].b, b: t.home, h: reach * rnd(30, 70) });
+    nextBurst = back + N * 380 + 700 + rnd(1400, 2400);
   }
   function pose(t, now) {
-    let lift = tval(t.z, now), dx = 0, dy = 0, ang = 0;
-    if (bursting && t.fl) {
-      const u = clamp((now - t.fl.t0) / (t.fl.t1 - t.fl.t0), 0, 1);
-      const arc = u > 0 && u < 1 ? Math.sin(Math.PI * u) : 0;
-      if (arc) { lift += t.fl.h * 4 * u * (1 - u); dx = t.fl.dx * arc; dy = t.fl.dy * arc; ang = t.fl.spin * arc; }
+    let f = { lift: tval(t.z, now), dx: 0, dy: 0, ang: 0 };
+    for (const leg of bursting ? t.legs : []) {
+      if (now < leg.t0) break;
+      const u = clamp((now - leg.t0) / (leg.t1 - leg.t0), 0, 1), m = (key) => lerp(leg.a[key], leg.b[key], u);
+      f = { lift: m("lift") + leg.h * 4 * u * (1 - u), dx: m("dx"), dy: m("dy"), ang: m("ang") };
     }
     const k = tval(t.back, now);
-    if (k > 0) { dx += t.off.dx * k; dy += t.off.dy * k; ang += t.off.ang * k; }
-    return { lift, dx, dy, ang };
+    return k > 0 ? { ...f, dx: f.dx + t.off.dx * k, dy: f.dy + t.off.dy * k, ang: f.ang + t.off.ang * k } : f;
   }
   function stopBurst(now) {
     if (!bursting) return;
-    // each tile glides home from exactly where its flight left it
-    for (const t of tiles) {
-      const f = pose(t, now);
-      t.z = tween(f.lift); t.off = f; t.back = tween(1); tset(t.back, 0, now, 0);
-    }
-    bursting = false;
-    act = -2;
+    // each tile glides home from exactly where it was
+    for (const t of tiles) { const f = pose(t, now); t.z = tween(f.lift); t.off = f; t.back = tween(1); tset(t.back, 0, now, 0); }
+    bursting = false; act = -2;
   }
-  // a tile higher in the air is painted later, so it passes in front
+  // paint back to front: height first, then nearness on the floor
   let order = tiles.map((t) => t.i).join();
+  const depth = (t, f) => t.i * T + f.lift + 0.35 * (t.cx + f.dx + t.cy + f.dy);
   function repaint(poses) {
-    const sorted = tiles.slice().sort((a, b) => (a.i * T + poses[a.i].lift) - (b.i * T + poses[b.i].lift));
+    const sorted = tiles.slice().sort((a, b) => depth(a, poses[a.i]) - depth(b, poses[b.i]));
     const next = sorted.map((t) => t.i).join();
     if (next === order) return;
     order = next;
@@ -170,14 +170,14 @@ function mount({ stage, svg, read }, value) {
     set: (v) => { gap = v; const a = act; act = -2; setActive(a); },
     // a page control outside the figure (the product row) picks a tile, or -1 for rest
     pick: (i) => setActive(i),
-    // the page's idle state: tiles fountain up and land back, nothing lit; any pick ends it.
-    // reach scales the throw: 1 clears a desktop screen, smaller keeps it near the stack
-    wave: (on, r = 1) => {
+    // the page's idle state, nothing lit; any pick ends it. reach scales the throw,
+    // area() is the rect, in viewBox units, the tiles may land in
+    wave: (on, r = 1, inside = null) => {
       if (!on) return stopBurst(performance.now());
-      reach = r;
+      reach = r; area = inside;
       if (bursting) return;
       bursting = true; nextBurst = performance.now() + 900;
-      for (const t of tiles) t.fl = null;
+      for (const t of tiles) t.legs = [];
       mark(null); read.textContent = "rest"; L.wake();
     },
     destroy: bag.dispose,

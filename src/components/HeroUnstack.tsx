@@ -12,7 +12,11 @@ import figure from "@/hero/unstack.js?raw";
 interface Handle {
   destroy: () => void;
   pick: (i: number) => void;
-  wave: (on: boolean, reach: number) => void;
+  wave: (
+    on: boolean,
+    reach: number,
+    area: () => { bottom: number; left: number; right: number; top: number }
+  ) => void;
 }
 
 interface Figure {
@@ -101,12 +105,26 @@ export function HeroUnstack({ active }: { active: number | null }) {
       },
     };
     const handle = unstack.mount({ read, stage, svg }, unstack.range[1]);
-    // Until a panel or a pointer picks a tile, the tiles fountain with nothing lit.
-    // Phones throw low, because the hero text sits right above the stack there.
+    // Until a panel or a pointer picks a tile, the tiles scatter and return with nothing lit.
+    // They land anywhere on the visible screen below the sticky header; phones throw low.
+    // The screen's rect goes to the figure in the stage's viewBox units (400 wide).
+    const landingArea = () => {
+      const s = stage.getBoundingClientRect();
+      const k = 400 / s.width;
+      const top =
+        document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+      return {
+        bottom: (window.innerHeight - s.top) * k,
+        left: -s.left * k,
+        right: (document.documentElement.clientWidth - s.left) * k,
+        top: (top - s.top) * k,
+      };
+    };
     const play = (on: boolean) =>
       handle.wave(
         on && !matchMedia("(prefers-reduced-motion: reduce)").matches,
-        matchMedia("(min-width: 1024px)").matches ? 1 : 0.3
+        matchMedia("(min-width: 1024px)").matches ? 1 : 0.3,
+        landingArea
       );
     const handBack = () => play(activeRef.current === null);
     stage.addEventListener("pointerleave", handBack);
